@@ -3,13 +3,18 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Award, MapPin, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { experiences, testimonials } from '../mock';
+import { experienceAPI } from '../services/api';
+import { testimonials } from '../mock';
 
 const Home = () => {
   const [stats, setStats] = useState({ experiences: 0, guests: 0, facilitators: 0, cities: 0 });
+  const [featuredExperiences, setFeaturedExperiences] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Animate stats on mount
   useEffect(() => {
+    fetchExperiences();
+    
     const duration = 2000;
     const steps = 60;
     const interval = duration / steps;
@@ -35,7 +40,17 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const featuredExperiences = experiences.filter((exp) => exp.featured);
+  const fetchExperiences = async () => {
+    try {
+      const data = await experienceAPI.getAll();
+      const featured = data.filter((exp) => exp.featured);
+      setFeaturedExperiences(featured);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching experiences:', error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-[#FAF7F0]">
