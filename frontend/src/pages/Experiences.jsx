@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { MapPin, Clock, Star, SlidersHorizontal } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -6,12 +6,14 @@ import { Card, CardContent } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
 import { Label } from '../components/ui/label';
 import { Slider } from '../components/ui/slider';
-import { experiences } from '../mock';
+import { experienceAPI } from '../services/api';
 
 const Experiences = () => {
   const [searchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
 
+  const [experiences, setExperiences] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     categories: categoryFromUrl ? [categoryFromUrl] : [],
     locations: [],
@@ -20,6 +22,21 @@ const Experiences = () => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    fetchExperiences();
+  }, []);
+
+  const fetchExperiences = async () => {
+    try {
+      const data = await experienceAPI.getAll();
+      setExperiences(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching experiences:', error);
+      setLoading(false);
+    }
+  };
 
   const categories = [
     'Temples & Spirituality',
@@ -84,6 +101,14 @@ const Experiences = () => {
     }
     return true;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F0]">
+        <div className="text-xl">Loading experiences...</div>
+      </div>
+    );
+  }
 
   const FilterPanel = () => (
     <div className="bg-white rounded-lg p-6 shadow-md sticky top-24">
