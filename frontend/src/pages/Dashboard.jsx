@@ -1,32 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Download, Edit, Trash2, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { mockUser } from '../mock';
+import { bookingAPI } from '../services/api';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = () => {
-    alert('Logged out successfully!');
-    navigate('/');
-  };
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      navigate('/login');
+      return;
+    }
+    setUser(JSON.parse(userData));
+    fetchBookings();
+  }, []);
 
-  const handleEditBooking = (bookingId) => {
-    alert(`Edit booking ${bookingId} - Feature coming soon!`);
-  };
-
-  const handleCancelBooking = (bookingId) => {
-    if (window.confirm('Are you sure you want to cancel this booking?')) {
-      alert(`Booking ${bookingId} cancelled successfully!`);
+  const fetchBookings = async () => {
+    try {
+      const data = await bookingAPI.getAll();
+      setBookings(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      setLoading(false);
     }
   };
 
-  const handleDownloadInvoice = (bookingId) => {
-    alert(`Downloading invoice for ${bookingId} - Feature coming soon!`);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/');
   };
+
+  const handleCancelBooking = async (bookingId) => {
+    if (window.confirm('Are you sure you want to cancel this booking?')) {
+      try {
+        await bookingAPI.cancel(bookingId);
+        alert(`Booking ${bookingId} cancelled successfully!`);
+        fetchBookings();
+      } catch (error) {
+        console.error('Error cancelling booking:', error);
+        alert('Failed to cancel booking');
+      }
+    }
+  };
+
+  const upcomingBookings = bookings.filter(b => b.status === 'confirmed');
+  const pastBookings = bookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F0]">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF7F0]">
@@ -36,9 +71,9 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-                Welcome, {mockUser.name}
+                Welcome, {user.name}
               </h1>
-              <p className="text-white/90">{mockUser.email}</p>
+              <p className="text-white/90">{user.email}</p>
             </div>
             <Button
               variant="outline"
@@ -61,7 +96,7 @@ const Dashboard = () => {
 
           {/* Upcoming Bookings */}
           <TabsContent value="upcoming" className="space-y-6">
-            {mockUser.upcomingBookings.length === 0 ? (
+            {upcomingBookings.length === 0 ? (
               <Card className="border-0 shadow-md">
                 <CardContent className="py-16 text-center">
                   <Calendar className="w-16 h-16 text-[#5C5C5C] mx-auto mb-4" />
@@ -79,7 +114,7 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              mockUser.upcomingBookings.map((booking) => (
+              upcomingBookings.map((booking) => (
                 <Card key={booking.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
                   <CardHeader className="bg-gradient-to-r from-[#FAF7F0] to-white">
                     <div className="flex items-start justify-between">
@@ -134,25 +169,9 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between pt-6 border-t border-gray-200">
                       <div>
                         <span className="text-sm text-[#5C5C5C]">Total Paid</span>
-                        <div className="text-2xl font-bold text-[#8B0000]">₹{booking.totalPaid.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-[#8B0000]">₹{booking.total_price.toLocaleString()}</div>
                       </div>
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDownloadInvoice(booking.id)}
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Invoice
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditBooking(booking.id)}
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Modify
-                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -178,7 +197,7 @@ const Dashboard = () => {
 
           {/* Past Experiences */}
           <TabsContent value="past" className="space-y-6">
-            {mockUser.pastBookings.length === 0 ? (
+            {pastBookings.length === 0 ? (
               <Card className="border-0 shadow-md">
                 <CardContent className="py-16 text-center">
                   <MapPin className="w-16 h-16 text-[#5C5C5C] mx-auto mb-4" />
@@ -191,7 +210,7 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              mockUser.pastBookings.map((booking) => (
+              pastBookings.map((booking) => (
                 <Card key={booking.id} className="border-0 shadow-lg">
                   <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
                     <div className="flex items-start justify-between">
@@ -224,31 +243,10 @@ const Dashboard = () => {
                           <span className="text-sm">{booking.guests.adults} Adults, {booking.guests.kids} Kids</span>
                         </div>
                         <div className="text-sm text-[#5C5C5C]">
-                          Total Paid: <span className="font-bold text-[#2C2C2C]">₹{booking.totalPaid.toLocaleString()}</span>
+                          Total Paid: <span className="font-bold text-[#2C2C2C]">₹{booking.total_price.toLocaleString()}</span>
                         </div>
-                        {booking.rating && (
-                          <div className="flex items-center gap-2 mt-3">
-                            <span className="text-sm text-[#5C5C5C]">Your Rating:</span>
-                            <div className="flex gap-1">
-                              {[...Array(booking.rating)].map((_, i) => (
-                                <span key={i} className="text-[#DAA520]">★</span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {booking.review && (
-                          <p className="text-sm text-[#5C5C5C] mt-2 italic">"{booking.review}"</p>
-                        )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDownloadInvoice(booking.id)}
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Invoice
-                        </Button>
                         <Link to="/experiences">
                           <Button
                             size="sm"
