@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { authAPI } from '../services/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,24 +15,40 @@ const Login = () => {
     name: '',
     phone: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock authentication
-    if (isLogin) {
-      if (formData.email && formData.password) {
-        alert('Login successful!');
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login
+        const response = await authAPI.login(formData.email, formData.password);
+        localStorage.setItem('token', response.access_token);
+        
+        // Get user details
+        const user = await authAPI.getMe();
+        localStorage.setItem('user', JSON.stringify(user));
+        
         navigate('/dashboard');
       } else {
-        alert('Please enter email and password');
-      }
-    } else {
-      if (formData.email && formData.password && formData.name && formData.phone) {
-        alert('Account created successfully!');
+        // Register
+        const response = await authAPI.register(formData);
+        localStorage.setItem('token', response.access_token);
+        
+        // Get user details
+        const user = await authAPI.getMe();
+        localStorage.setItem('user', JSON.stringify(user));
+        
         navigate('/dashboard');
-      } else {
-        alert('Please fill in all fields');
       }
+    } catch (err) {
+      console.error('Auth error:', err);
+      setError(err.response?.data?.detail || 'Authentication failed');
+      setLoading(false);
     }
   };
 
@@ -55,6 +72,12 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            
             {!isLogin && (
               <>
                 <div>
@@ -113,8 +136,9 @@ const Login = () => {
             <Button
               type="submit"
               className="w-full bg-[#8B0000] hover:bg-[#6B0000] text-white py-6"
+              disabled={loading}
             >
-              {isLogin ? 'Login' : 'Create Account'}
+              {loading ? (isLogin ? 'Logging in...' : 'Creating account...') : (isLogin ? 'Login' : 'Create Account')}
             </Button>
           </form>
 
