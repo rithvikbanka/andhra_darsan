@@ -10,21 +10,30 @@ import ExperienceDetail from './pages/ExperienceDetail';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import FAQ from './pages/FAQ';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+
   return (
     <div className="App">
       <BrowserRouter>
-        <Header />
+        {!isAdminRoute && <Header />}
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/experience/:id" element={<ExperienceDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/faq" element={<FAQ />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
-        <Footer />
+        {!isAdminRoute && <Footer />}
         <WhatsAppButton />
       </BrowserRouter>
     </div>
