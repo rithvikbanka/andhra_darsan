@@ -74,9 +74,8 @@ const ExperienceDetail = () => {
     addOnsCost += addOns.souvenirKits * 1000;
     if (addOns.photography) addOnsCost += 1500;
 
-    const subtotal = basePrice + addOnsCost;
-    const gst = subtotal * 0.18;
-    return { basePrice, addOnsCost, gst, total: subtotal + gst };
+    const total = basePrice + addOnsCost;
+    return { basePrice, addOnsCost, total };
   };
 
   const pricing = calculatePrice();
@@ -472,10 +471,6 @@ const ExperienceDetail = () => {
                         <span>₹{pricing.addOnsCost.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-sm">
-                      <span>GST (18%)</span>
-                      <span>₹{pricing.gst.toFixed(2)}</span>
-                    </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2">
                       <span>Total</span>
                       <span className="text-[#8B0000]">₹{pricing.total.toFixed(2)}</span>
