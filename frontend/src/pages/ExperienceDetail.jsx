@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -13,12 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { experiences, testimonials } from '../mock';
+import { experienceAPI, bookingAPI } from '../services/api';
+import { testimonials } from '../mock';
 
 const ExperienceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const experience = experiences.find((exp) => exp.id === parseInt(id));
+  const [experience, setExperience] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [bookingType, setBookingType] = useState('private');
   const [adults, setAdults] = useState(1);
@@ -30,7 +32,7 @@ const ExperienceDetail = () => {
     pickup: false,
     pickupLocation: '',
     specialPuja: 0,
-    souvenirKits: adults,
+    souvenirKits: 1,
     photography: false
   });
   const [customerDetails, setCustomerDetails] = useState({
@@ -38,6 +40,33 @@ const ExperienceDetail = () => {
     email: '',
     phone: ''
   });
+
+  useEffect(() => {
+    fetchExperience();
+  }, [id]);
+
+  const fetchExperience = async () => {
+    try {
+      const data = await experienceAPI.getById(parseInt(id));
+      setExperience(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching experience:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setAddOns(prev => ({ ...prev, souvenirKits: adults }));
+  }, [adults]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading experience...</p>
+      </div>
+    );
+  }
 
   if (!experience) {
     return (
@@ -80,7 +109,7 @@ const ExperienceDetail = () => {
 
   const pricing = calculatePrice();
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (!selectedDate || !selectedTime) {
       alert('Please select date and time');
       return;
@@ -90,12 +119,39 @@ const ExperienceDetail = () => {
       return;
     }
     
-    // Mock booking confirmation
-    const bookingId = 'BD' + Math.floor(Math.random() * 10000);
-    alert(
-      `Booking Confirmed!\n\nBooking ID: ${bookingId}\nExperience: ${experience.title}\nDate: ${selectedDate}\nTime: ${selectedTime}\nTotal: ₹${pricing.total.toFixed(2)}\n\nConfirmation sent to ${customerDetails.email}`
-    );
-    navigate('/dashboard');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to make a booking');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const bookingData = {
+        experience_id: experience.id,
+        experience_title: experience.title,
+        booking_type: bookingType,
+        date: selectedDate,
+        time: selectedTime,
+        guests: { adults, kids },
+        group_size: bookingType === 'group' ? groupSize : null,
+        add_ons: addOns,
+        customer_name: customerDetails.name,
+        customer_email: customerDetails.email,
+        customer_phone: customerDetails.phone,
+        total_price: pricing.total
+      };
+
+      const response = await bookingAPI.create(bookingData);
+      
+      alert(
+        `Booking Confirmed!\n\nBooking ID: ${response.id}\nExperience: ${experience.title}\nDate: ${selectedDate}\nTime: ${selectedTime}\nTotal: ₹${pricing.total.toFixed(2)}\n\nConfirmation sent to ${customerDetails.email}`
+      );
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert(error.response?.data?.detail || 'Failed to create booking. Please try again.');
+    }
   };
 
   return (
