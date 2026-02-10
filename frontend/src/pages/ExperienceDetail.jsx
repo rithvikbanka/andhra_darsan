@@ -536,87 +536,141 @@ const ExperienceDetail = () => {
                   <div>
                     <Label className="text-sm font-semibold mb-3 block">4. Add-ons (Optional)</Label>
                     <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Checkbox
-                            id="pickup"
-                            checked={addOns.pickup}
-                            onCheckedChange={(checked) =>
-                              setAddOns({ ...addOns, pickup: checked, pickupLocation: checked ? 'vijayawada' : '' })
-                            }
-                          />
-                          <Label htmlFor="pickup" className="text-sm cursor-pointer">
-                            Pickup & Drop Off
-                          </Label>
-                        </div>
-                        {addOns.pickup && (
-                          <Select
-                            value={addOns.pickupLocation}
-                            onValueChange={(value) => setAddOns({ ...addOns, pickupLocation: value })}
-                          >
-                            <SelectTrigger className="ml-6">
-                              <SelectValue placeholder="Select location" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="vijayawada">Vijayawada (₹1,800 per 3 guests)</SelectItem>
-                              <SelectItem value="guntur">Guntur (₹2,300 per 3 guests)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
+                      {(experience.addOns || []).filter(addon => addon.active).map((addon) => {
+                        // Pickup add-ons
+                        if (addon.name.includes('Pickup')) {
+                          const location = addon.name.includes('Vijayawada') ? 'vijayawada' : 'guntur';
+                          if (!addOns.pickup) {
+                            return (
+                              <div key={addon.id}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Checkbox
+                                    id={addon.id}
+                                    checked={false}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setAddOns({ ...addOns, pickup: true, pickupLocation: location });
+                                      }
+                                    }}
+                                  />
+                                  <Label htmlFor={addon.id} className="text-sm cursor-pointer">
+                                    {addon.name} - ₹{addon.price}
+                                    {addon.calculationType === 'per_3_guests' && ' per 3 guests'}
+                                  </Label>
+                                </div>
+                              </div>
+                            );
+                          } else if (addOns.pickupLocation === location) {
+                            return (
+                              <div key={addon.id}>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id={addon.id}
+                                    checked={true}
+                                    onCheckedChange={(checked) => {
+                                      if (!checked) {
+                                        setAddOns({ ...addOns, pickup: false, pickupLocation: '' });
+                                      }
+                                    }}
+                                  />
+                                  <Label htmlFor={addon.id} className="text-sm cursor-pointer">
+                                    {addon.name} - ₹{addon.price}
+                                    {addon.calculationType === 'per_3_guests' && ' per 3 guests'}
+                                  </Label>
+                                </div>
+                                {addon.description && (
+                                  <p className="text-xs text-gray-500 ml-6">{addon.description}</p>
+                                )}
+                              </div>
+                            );
+                          }
+                          return null;
+                        }
 
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Special Puja Tickets (₹500 each)</Label>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setAddOns({ ...addOns, specialPuja: Math.max(0, addOns.specialPuja - 1) })}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-                          <span className="w-6 text-center text-sm">{addOns.specialPuja}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setAddOns({ ...addOns, specialPuja: addOns.specialPuja + 1 })}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
+                        // Special Puja - quantity selector
+                        if (addon.name.includes('Special Puja') || addon.name.includes('Puja Tickets')) {
+                          return (
+                            <div key={addon.id} className="flex items-center justify-between">
+                              <Label className="text-sm">{addon.name} (₹{addon.price} each)</Label>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setAddOns({ ...addOns, specialPuja: Math.max(0, addOns.specialPuja - 1) })}
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </Button>
+                                <span className="w-6 text-center text-sm">{addOns.specialPuja}</span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setAddOns({ ...addOns, specialPuja: addOns.specialPuja + 1 })}
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }
 
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Souvenir Kits (₹1,000 each)</Label>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setAddOns({ ...addOns, souvenirKits: Math.max(0, addOns.souvenirKits - 1) })}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-                          <span className="w-6 text-center text-sm">{addOns.souvenirKits}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setAddOns({ ...addOns, souvenirKits: addOns.souvenirKits + 1 })}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
+                        // Souvenir Kits - quantity selector
+                        if (addon.name.includes('Souvenir')) {
+                          return (
+                            <div key={addon.id} className="flex items-center justify-between">
+                              <Label className="text-sm">{addon.name} (₹{addon.price} each)</Label>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setAddOns({ ...addOns, souvenirKits: Math.max(0, addOns.souvenirKits - 1) })}
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </Button>
+                                <span className="w-6 text-center text-sm">{addOns.souvenirKits}</span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setAddOns({ ...addOns, souvenirKits: addOns.souvenirKits + 1 })}
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }
 
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="photography"
-                          checked={addOns.photography}
-                          onCheckedChange={(checked) => setAddOns({ ...addOns, photography: checked })}
-                        />
-                        <Label htmlFor="photography" className="text-sm cursor-pointer">
-                          Photography / Reels (₹1,500)
-                        </Label>
-                      </div>
+                        // Photography - checkbox
+                        if (addon.name.includes('Photography') || addon.name.includes('Reels')) {
+                          return (
+                            <div key={addon.id} className="flex items-center gap-2">
+                              <Checkbox
+                                id={addon.id}
+                                checked={addOns.photography}
+                                onCheckedChange={(checked) => setAddOns({ ...addOns, photography: checked })}
+                              />
+                              <Label htmlFor={addon.id} className="text-sm cursor-pointer">
+                                {addon.name} (₹{addon.price})
+                                {addon.description && ` - ${addon.description}`}
+                              </Label>
+                            </div>
+                          );
+                        }
+
+                        // Generic add-ons
+                        return (
+                          <div key={addon.id} className="flex items-center gap-2">
+                            <Checkbox
+                              id={addon.id}
+                              checked={addOns[addon.id] || false}
+                              onCheckedChange={(checked) => setAddOns({ ...addOns, [addon.id]: checked })}
+                            />
+                            <Label htmlFor={addon.id} className="text-sm cursor-pointer">
+                              {addon.name} (₹{addon.price})
+                              {addon.description && ` - ${addon.description}`}
+                            </Label>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
