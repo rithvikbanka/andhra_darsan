@@ -161,6 +161,37 @@ const ExperienceDetail = () => {
 
   const pricing = calculatePrice();
 
+  // Get available dates for selected booking type
+  const getAvailableDates = () => {
+    if (!experience.availability) return [];
+    return experience.availability
+      .filter(day => {
+        // Check if this date has any available slots for selected booking type
+        return day.timeSlots.some(slot => 
+          slot.bookingType === bookingType && 
+          slot.available && 
+          slot.currentBookings < slot.maxCapacity
+        );
+      })
+      .map(day => day.date);
+  };
+
+  // Get available time slots for selected date and booking type
+  const getAvailableTimeSlots = () => {
+    if (!experience.availability || !selectedDate) return [];
+    const dayAvailability = experience.availability.find(day => day.date === selectedDate);
+    if (!dayAvailability) return [];
+    
+    return dayAvailability.timeSlots.filter(slot => 
+      slot.bookingType === bookingType && 
+      slot.available && 
+      slot.currentBookings < slot.maxCapacity
+    );
+  };
+
+  const availableDates = getAvailableDates();
+  const availableTimeSlots = getAvailableTimeSlots();
+
   const handleBooking = async () => {
     if (!selectedDate || !selectedTime) {
       alert('Please select date and time');
@@ -444,23 +475,51 @@ const ExperienceDetail = () => {
                   <div>
                     <Label className="text-sm font-semibold mb-2 block">2. Select Date & Time</Label>
                     <div className="space-y-3">
-                      <Input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                      <Select value={selectedTime} onValueChange={setSelectedTime}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="09:00">09:00 AM</SelectItem>
-                          <SelectItem value="10:00">10:00 AM</SelectItem>
-                          <SelectItem value="14:00">02:00 PM</SelectItem>
-                          <SelectItem value="15:00">03:00 PM</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div>
+                        <Label className="text-xs mb-1 block">Select Date</Label>
+                        <Select value={selectedDate} onValueChange={setSelectedDate}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose available date" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableDates.length === 0 ? (
+                              <div className="px-2 py-1 text-sm text-gray-500">No dates available</div>
+                            ) : (
+                              availableDates.map(date => (
+                                <SelectItem key={date} value={date}>
+                                  {new Date(date).toLocaleDateString('en-IN', {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {selectedDate && (
+                        <div>
+                          <Label className="text-xs mb-1 block">Select Time</Label>
+                          <Select value={selectedTime} onValueChange={setSelectedTime}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose time slot" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableTimeSlots.length === 0 ? (
+                                <div className="px-2 py-1 text-sm text-gray-500">No slots available</div>
+                              ) : (
+                                availableTimeSlots.map(slot => (
+                                  <SelectItem key={slot.time} value={slot.time}>
+                                    {slot.time} ({slot.maxCapacity - slot.currentBookings} spots left)
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
                   </div>
 
