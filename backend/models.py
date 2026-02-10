@@ -118,3 +118,13 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+# Newsletter Models
+class NewsletterSubscriber(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    subscribed_at: datetime = Field(default_factory=datetime.utcnow)
+    status: str = "active"  # active, unsubscribed
+
+class NewsletterSubscribe(BaseModel):
+    email: EmailStr

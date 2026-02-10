@@ -12,7 +12,8 @@ from typing import List, Optional
 from models import (
     User, UserCreate, UserLogin, UserInDB, Token,
     Experience, ExperienceCreate, ExperienceUpdate,
-    Booking, BookingCreate, BookingUpdate
+    Booking, BookingCreate, BookingUpdate,
+    NewsletterSubscriber, NewsletterSubscribe
 )
 from auth import (
     get_password_hash, verify_password, create_access_token,
@@ -267,6 +268,7 @@ async def get_admin_stats(
     
     total_experiences = await db.experiences.count_documents({})
     total_users = await db.users.count_documents({})
+    total_subscribers = await db.newsletter_subscribers.count_documents({"status": "active"})
     
     return {
         "total_bookings": total_bookings,
@@ -274,8 +276,43 @@ async def get_admin_stats(
         "cancelled_bookings": cancelled_bookings,
         "total_revenue": total_revenue,
         "total_experiences": total_experiences,
-        "total_users": total_users
+        "total_users": total_users,
+        "total_subscribers": total_subscribers
     }
+
+
+# ============ NEWSLETTER ROUTES ============
+
+@api_router.post("/newsletter/subscribe", response_model=NewsletterSubscriber)
+async def subscribe_newsletter(subscriber: NewsletterSubscribe):
+    # Check if already subscribed
+    existing = await db.newsletter_subscribers.find_one({"email": subscriber.email})
+    if existing:
+        if existing.get("status") == "active":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already subscribed"
+            )
+        else:
+            # Reactivate subscription
+            await db.newsletter_subscribers.update_one(
+                {"email": subscriber.email},
+                {"$set": {"status": "active", "subscribed_at": datetime.utcnow()}}
+            )
+            updated = await db.newsletter_subscribers.find_one({"email": subscriber.email})
+            return NewsletterSubscriber(**updated)
+    
+    # Create new subscription
+    sub_obj = NewsletterSubscriber(email=subscriber.email)
+    await db.newsletter_subscribers.insert_one(sub_obj.dict())
+    return sub_obj
+
+@api_router.get("/admin/newsletter/subscribers", response_model=List[NewsletterSubscriber])
+async def get_newsletter_subscribers(
+    current_user: User = Depends(lambda token: get_current_admin_user(get_current_user(token, db)))
+):
+    subscribers = await db.newsletter_subscribers.find({"status": "active"}).to_list(10000)
+    return [NewsletterSubscriber(**sub) for sub in subscribers]
 
 
 # Include the router in the main app
