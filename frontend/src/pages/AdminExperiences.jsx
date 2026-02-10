@@ -75,7 +75,8 @@ const AdminExperiences = () => {
       { id: 'addon-3', name: 'Special Puja Tickets', description: '', price: 500, calculationType: 'per_person', active: true },
       { id: 'addon-4', name: 'Souvenir Kits', description: '', price: 1000, calculationType: 'per_adult', active: true },
       { id: 'addon-5', name: 'Photography / Reels', description: '', price: 1500, calculationType: 'flat', active: true }
-    ]
+    ],
+    availability: []
   });
 
   useEffect(() => {
@@ -125,7 +126,8 @@ const AdminExperiences = () => {
         shared: { enabled: true, adult: 2500, child: 1700 },
         group: { enabled: true, tier1: { min: 10, max: 17, pricePerPerson: 2200 }, tier2: { min: 18, max: 25, pricePerPerson: 2000 } }
       },
-      addOns: experience.addOns || []
+      addOns: experience.addOns || [],
+      availability: experience.availability || []
     });
     setShowForm(true);
   };
