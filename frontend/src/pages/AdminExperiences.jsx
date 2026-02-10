@@ -200,7 +200,27 @@ const AdminExperiences = () => {
         { url: '', embedUrl: '' },
         { url: '', embedUrl: '' },
         { url: '', embedUrl: '' }
-      ]
+      ],
+      bookingTypes: ['private', 'shared', 'group'],
+      pricing: {
+        private: {
+          enabled: true,
+          firstAdult: 3600,
+          additionalAdult: 2200,
+          child: 1500
+        },
+        shared: {
+          enabled: true,
+          adult: 2500,
+          child: 1700
+        },
+        group: {
+          enabled: true,
+          tier1: { min: 10, max: 17, pricePerPerson: 2200 },
+          tier2: { min: 18, max: 25, pricePerPerson: 2000 }
+        }
+      },
+      addOns: []
     });
   };
 
