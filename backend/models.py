@@ -25,6 +25,10 @@ class UserLogin(BaseModel):
     password: str
 
 # Experience Models
+class InstagramReel(BaseModel):
+    url: str
+    embedUrl: str
+
 class Experience(BaseModel):
     id: int
     title: str
@@ -40,6 +44,7 @@ class Experience(BaseModel):
     whoIsThisFor: str
     included: List[str]
     images: List[str]
+    instagramReels: Optional[List[InstagramReel]] = []
 
 class ExperienceCreate(BaseModel):
     title: str
@@ -55,6 +60,7 @@ class ExperienceCreate(BaseModel):
     whoIsThisFor: str
     included: List[str]
     images: List[str]
+    instagramReels: Optional[List[InstagramReel]] = []
 
 class ExperienceUpdate(BaseModel):
     title: Optional[str] = None
@@ -70,6 +76,7 @@ class ExperienceUpdate(BaseModel):
     whoIsThisFor: Optional[str] = None
     included: Optional[List[str]] = None
     images: Optional[List[str]] = None
+    instagramReels: Optional[List[InstagramReel]] = None
 
 # Booking Models
 class GuestCount(BaseModel):
