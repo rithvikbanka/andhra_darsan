@@ -49,6 +49,32 @@ const AdminExperiences = () => {
       { url: '', embedUrl: '' },
       { url: '', embedUrl: '' },
       { url: '', embedUrl: '' }
+    ],
+    bookingTypes: ['private', 'shared', 'group'],
+    pricing: {
+      private: {
+        enabled: true,
+        firstAdult: 3600,
+        additionalAdult: 2200,
+        child: 1500
+      },
+      shared: {
+        enabled: true,
+        adult: 2500,
+        child: 1700
+      },
+      group: {
+        enabled: true,
+        tier1: { min: 10, max: 17, pricePerPerson: 2200 },
+        tier2: { min: 18, max: 25, pricePerPerson: 2000 }
+      }
+    },
+    addOns: [
+      { id: 'addon-1', name: 'Pickup & Drop Off - Vijayawada', description: '', price: 1800, calculationType: 'per_3_guests', active: true },
+      { id: 'addon-2', name: 'Pickup & Drop Off - Guntur', description: '', price: 2300, calculationType: 'per_3_guests', active: true },
+      { id: 'addon-3', name: 'Special Puja Tickets', description: '', price: 500, calculationType: 'per_person', active: true },
+      { id: 'addon-4', name: 'Souvenir Kits', description: '', price: 1000, calculationType: 'per_adult', active: true },
+      { id: 'addon-5', name: 'Photography / Reels', description: '', price: 1500, calculationType: 'flat', active: true }
     ]
   });
 
