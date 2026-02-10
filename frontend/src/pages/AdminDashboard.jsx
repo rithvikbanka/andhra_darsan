@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [experiences, setExperiences] = useState([]);
+  const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,15 +30,17 @@ const AdminDashboard = () => {
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const [statsRes, bookingsRes, experiencesRes] = await Promise.all([
+      const [statsRes, bookingsRes, experiencesRes, subscribersRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, config),
         axios.get(`${API}/admin/bookings`, config),
-        axios.get(`${API}/experiences`)
+        axios.get(`${API}/experiences`),
+        axios.get(`${API}/admin/newsletter/subscribers`, config)
       ]);
 
       setStats(statsRes.data);
       setBookings(bookingsRes.data);
       setExperiences(experiencesRes.data);
+      setSubscribers(subscribersRes.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching admin data:', error);
@@ -168,13 +171,30 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-[#5C5C5C]">
+                Newsletter Subscribers
+              </CardTitle>
+              <Mail className="w-5 h-5 text-[#DAA520]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-[#2C2C2C]">
+                {stats.total_subscribers}
+              </div>
+              <p className="text-xs text-[#5C5C5C] mt-1">
+                Active subscribers
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Bookings and Experiences Tabs */}
         <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3">
             <TabsTrigger value="bookings">Recent Bookings</TabsTrigger>
             <TabsTrigger value="experiences">Experiences</TabsTrigger>
+            <TabsTrigger value="subscribers">Newsletter</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings">
@@ -263,6 +283,44 @@ const AdminDashboard = () => {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="subscribers">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Newsletter Subscribers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {subscribers.length === 0 ? (
+                  <p className="text-center text-[#5C5C5C] py-8">No subscribers yet</p>
+                ) : (
+                  <div className="space-y-3">
+                    {subscribers.map((subscriber, index) => (
+                      <div key={subscriber.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-[#DAA520]/10 rounded-full flex items-center justify-center">
+                            <Mail className="w-5 h-5 text-[#DAA520]" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-[#2C2C2C]">{subscriber.email}</p>
+                            <p className="text-xs text-[#5C5C5C]">
+                              Subscribed: {new Date(subscriber.subscribed_at).toLocaleDateString('en-IN', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                          Active
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
