@@ -105,7 +105,7 @@ class ExperienceCreate(BaseModel):
     bookingTypes: Optional[List[str]] = ["private", "shared", "group"]
     pricing: Optional[PricingStructure] = PricingStructure()
     addOns: Optional[List[AddOn]] = []
-    availability: Optional[List[Availability]] = []
+    availability: Optional[List[DayAvailability]] = []
 
 class ExperienceUpdate(BaseModel):
     title: Optional[str] = None
