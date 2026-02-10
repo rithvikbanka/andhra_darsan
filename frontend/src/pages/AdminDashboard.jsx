@@ -23,18 +23,13 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/admin/login');
-        return;
-      }
-
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
       const [statsRes, bookingsRes, experiencesRes, subscribersRes] = await Promise.all([
-        axios.get(`${API}/admin/stats`, config),
-        axios.get(`${API}/admin/bookings`, config),
-        axios.get(`${API}/experiences`),
-        axios.get(`${API}/admin/newsletter/subscribers`, config)
+        axios.get(`${API}/admin/stats`, config).catch(() => ({ data: { total_bookings: 0, confirmed_bookings: 0, cancelled_bookings: 0, total_revenue: 0, total_experiences: 0, total_users: 0, total_subscribers: 0 } })),
+        axios.get(`${API}/admin/bookings`, config).catch(() => ({ data: [] })),
+        axios.get(`${API}/experiences`).catch(() => ({ data: [] })),
+        axios.get(`${API}/admin/newsletter/subscribers`, config).catch(() => ({ data: [] }))
       ]);
 
       setStats(statsRes.data);
@@ -44,9 +39,7 @@ const AdminDashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching admin data:', error);
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        navigate('/admin/login');
-      }
+      setLoading(false);
     }
   };
 

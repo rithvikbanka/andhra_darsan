@@ -80,11 +80,6 @@ const AdminExperiences = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/admin/login');
-      return;
-    }
     fetchExperiences();
   }, []);
 
@@ -137,14 +132,13 @@ const AdminExperiences = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API}/experiences/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      await axios.delete(`${API}/experiences/${id}`, config);
       alert('Experience deleted successfully!');
       fetchExperiences();
     } catch (error) {
       console.error('Error deleting experience:', error);
-      alert('Failed to delete experience');
+      alert(error.response?.data?.detail || 'Failed to delete experience. You may need admin access.');
     }
   };
 
@@ -153,7 +147,7 @@ const AdminExperiences = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
       const payload = {
         ...formData,
@@ -179,7 +173,7 @@ const AdminExperiences = () => {
       fetchExperiences();
     } catch (error) {
       console.error('Error saving experience:', error);
-      alert(error.response?.data?.detail || 'Failed to save experience');
+      alert(error.response?.data?.detail || 'Failed to save experience. You may need admin access.');
     }
   };
 
