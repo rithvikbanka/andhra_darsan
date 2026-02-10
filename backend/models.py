@@ -29,13 +29,47 @@ class InstagramReel(BaseModel):
     url: str
     embedUrl: str
 
+class TimeSlot(BaseModel):
+    time: str
+    available: bool = True
+
+class Availability(BaseModel):
+    date: str
+    timeSlots: List[TimeSlot]
+
+class AddOn(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    price: int
+    calculationType: str  # "per_person", "per_3_guests", "flat", "per_adult"
+    active: bool = True
+
+class PricingStructure(BaseModel):
+    private: Optional[dict] = {
+        "enabled": True,
+        "firstAdult": 3600,
+        "additionalAdult": 2200,
+        "child": 1500
+    }
+    shared: Optional[dict] = {
+        "enabled": True,
+        "adult": 2500,
+        "child": 1700
+    }
+    group: Optional[dict] = {
+        "enabled": True,
+        "tier1": {"min": 10, "max": 17, "pricePerPerson": 2200},
+        "tier2": {"min": 18, "max": 25, "pricePerPerson": 2000}
+    }
+
 class Experience(BaseModel):
     id: int
     title: str
     category: str
     location: str
     duration: str
-    price: int
+    price: int  # Base display price
     rating: float
     image: str
     featured: bool = False
@@ -45,6 +79,10 @@ class Experience(BaseModel):
     included: List[str]
     images: List[str]
     instagramReels: Optional[List[InstagramReel]] = []
+    bookingTypes: Optional[List[str]] = ["private", "shared", "group"]
+    pricing: Optional[PricingStructure] = PricingStructure()
+    addOns: Optional[List[AddOn]] = []
+    availability: Optional[List[Availability]] = []
 
 class ExperienceCreate(BaseModel):
     title: str
@@ -61,6 +99,10 @@ class ExperienceCreate(BaseModel):
     included: List[str]
     images: List[str]
     instagramReels: Optional[List[InstagramReel]] = []
+    bookingTypes: Optional[List[str]] = ["private", "shared", "group"]
+    pricing: Optional[PricingStructure] = PricingStructure()
+    addOns: Optional[List[AddOn]] = []
+    availability: Optional[List[Availability]] = []
 
 class ExperienceUpdate(BaseModel):
     title: Optional[str] = None
@@ -77,6 +119,10 @@ class ExperienceUpdate(BaseModel):
     included: Optional[List[str]] = None
     images: Optional[List[str]] = None
     instagramReels: Optional[List[InstagramReel]] = None
+    bookingTypes: Optional[List[str]] = None
+    pricing: Optional[PricingStructure] = None
+    addOns: Optional[List[AddOn]] = None
+    availability: Optional[List[Availability]] = None
 
 # Booking Models
 class GuestCount(BaseModel):
