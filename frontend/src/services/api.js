@@ -130,5 +130,20 @@ export const adminAPI = {
       headers: getAuthHeader()
     });
     return response.data;
+  },
+  
+  getNewsletterSubscribers: async () => {
+    const response = await axios.get(`${API}/admin/newsletter/subscribers`, {
+      headers: getAuthHeader()
+    });
+    return response.data;
+  }
+};
+
+// Newsletter APIs
+export const newsletterAPI = {
+  subscribe: async (email) => {
+    const response = await axios.post(`${API}/newsletter/subscribe`, { email });
+    return response.data;
   }
 };

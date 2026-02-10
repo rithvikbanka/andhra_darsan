@@ -1,16 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { newsletterAPI } from '../services/api';
 
 const Footer = () => {
-  const [email, setEmail] = React.useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const handleNewsletterSubmit = (e) => {
+  const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
-    alert(`Newsletter subscription for ${email} - Feature coming soon!`);
-    setEmail('');
+    setLoading(true);
+    setMessage('');
+
+    try {
+      await newsletterAPI.subscribe(email);
+      setMessage('Successfully subscribed to newsletter!');
+      setEmail('');
+    } catch (error) {
+      setMessage(error.response?.data?.detail || 'Subscription failed. Please try again.');
+    } finally {
+      setLoading(false);
+      setTimeout(() => setMessage(''), 5000);
+    }
   };
 
   return (
@@ -130,15 +144,22 @@ const Footer = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 text-sm"
                   required
+                  disabled={loading}
                 />
                 <Button
                   type="submit"
                   size="sm"
                   className="bg-[#DAA520] hover:bg-[#B8860B] text-[#2C2C2C]"
+                  disabled={loading}
                 >
-                  Subscribe
+                  {loading ? '...' : 'Subscribe'}
                 </Button>
               </form>
+              {message && (
+                <p className={`text-xs mt-2 ${message.includes('Success') ? 'text-green-400' : 'text-red-400'}`}>
+                  {message}
+                </p>
+              )}
             </div>
           </div>
         </div>
