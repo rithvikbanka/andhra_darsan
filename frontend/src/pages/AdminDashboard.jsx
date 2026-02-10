@@ -245,8 +245,14 @@ const AdminDashboard = () => {
 
           <TabsContent value="experiences">
             <Card className="border-0 shadow-lg">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>All Experiences</CardTitle>
+                <Button
+                  onClick={() => navigate('/admin/experiences')}
+                  className="bg-[#8B0000] hover:bg-[#6B0000] text-white"
+                >
+                  Manage Experiences
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

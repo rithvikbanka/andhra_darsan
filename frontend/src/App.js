@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import FAQ from './pages/FAQ';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminExperiences from './pages/AdminExperiences';
 
 function AppContent() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function AppContent() {
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/experiences" element={<AdminExperiences />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       <WhatsAppButton />
