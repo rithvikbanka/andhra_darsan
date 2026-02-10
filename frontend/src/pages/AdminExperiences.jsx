@@ -905,6 +905,163 @@ const AdminExperiences = () => {
               </div>
             </div>
 
+            {/* Availability Calendar */}
+            <div className="space-y-4 border-t pt-6">
+              <h3 className="text-lg font-semibold text-[#8B0000]">Availability Calendar & Time Slots</h3>
+              
+              <div className="flex items-center justify-between">
+                <Label>Available Dates</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setFormData({
+                    ...formData,
+                    availability: [...formData.availability, {
+                      date: '',
+                      timeSlots: []
+                    }]
+                  })}
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add Date
+                </Button>
+              </div>
+
+              {formData.availability.map((day, dayIndex) => (
+                <Card key={dayIndex} className="bg-gray-50">
+                  <CardContent className="p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 mr-4">
+                        <Label>Date</Label>
+                        <Input
+                          type="date"
+                          value={day.date}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => {
+                            const newAvailability = [...formData.availability];
+                            newAvailability[dayIndex].date = e.target.value;
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            const newAvailability = [...formData.availability];
+                            newAvailability[dayIndex].timeSlots.push({
+                              time: '',
+                              bookingType: 'private',
+                              maxCapacity: 1,
+                              currentBookings: 0,
+                              available: true
+                            });
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                        >
+                          <Plus className="w-4 h-4 mr-1" /> Add Time Slot
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const newAvailability = formData.availability.filter((_, i) => i !== dayIndex);
+                            setFormData({ ...formData, availability: newAvailability });
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Time Slots */}
+                    {day.timeSlots.length > 0 && (
+                      <div className="space-y-2 border-t pt-3">
+                        <Label className="text-sm font-semibold">Time Slots</Label>
+                        {day.timeSlots.map((slot, slotIndex) => (
+                          <div key={slotIndex} className="grid grid-cols-5 gap-2 items-end bg-white p-3 rounded">
+                            <div>
+                              <Label className="text-xs">Time</Label>
+                              <Input
+                                type="time"
+                                value={slot.time}
+                                onChange={(e) => {
+                                  const newAvailability = [...formData.availability];
+                                  newAvailability[dayIndex].timeSlots[slotIndex].time = e.target.value;
+                                  setFormData({ ...formData, availability: newAvailability });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Booking Type</Label>
+                              <Select
+                                value={slot.bookingType}
+                                onValueChange={(value) => {
+                                  const newAvailability = [...formData.availability];
+                                  newAvailability[dayIndex].timeSlots[slotIndex].bookingType = value;
+                                  setFormData({ ...formData, availability: newAvailability });
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {formData.pricing.private.enabled && (
+                                    <SelectItem value="private">Private</SelectItem>
+                                  )}
+                                  {formData.pricing.shared.enabled && (
+                                    <SelectItem value="shared">Shared</SelectItem>
+                                  )}
+                                  {formData.pricing.group.enabled && (
+                                    <SelectItem value="group">Group</SelectItem>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Max Capacity</Label>
+                              <Input
+                                type="number"
+                                min="1"
+                                value={slot.maxCapacity}
+                                onChange={(e) => {
+                                  const newAvailability = [...formData.availability];
+                                  newAvailability[dayIndex].timeSlots[slotIndex].maxCapacity = parseInt(e.target.value) || 1;
+                                  setFormData({ ...formData, availability: newAvailability });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Current Bookings</Label>
+                              <Input
+                                type="number"
+                                value={slot.currentBookings || 0}
+                                disabled
+                                className="bg-gray-100"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const newAvailability = [...formData.availability];
+                                newAvailability[dayIndex].timeSlots = newAvailability[dayIndex].timeSlots.filter((_, i) => i !== slotIndex);
+                                setFormData({ ...formData, availability: newAvailability });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
             {/* Form Actions */}
             <div className="flex gap-3 pt-4 border-t">
               <Button type="submit" className="bg-[#8B0000] hover:bg-[#6B0000] text-white">
