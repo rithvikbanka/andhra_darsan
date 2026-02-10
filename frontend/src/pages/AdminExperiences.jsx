@@ -564,6 +564,325 @@ const AdminExperiences = () => {
               ))}
             </div>
 
+            {/* Booking Configuration */}
+            <div className="space-y-4 border-t pt-6">
+              <h3 className="text-lg font-semibold text-[#8B0000]">Booking Configuration</h3>
+              
+              {/* Booking Types */}
+              <div>
+                <Label className="mb-3 block">Enable Booking Types</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="private-enabled"
+                      checked={formData.pricing?.private?.enabled}
+                      onCheckedChange={(checked) => setFormData({
+                        ...formData,
+                        pricing: { ...formData.pricing, private: { ...formData.pricing.private, enabled: checked } }
+                      })}
+                    />
+                    <Label htmlFor="private-enabled" className="cursor-pointer">Private Tour</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="shared-enabled"
+                      checked={formData.pricing?.shared?.enabled}
+                      onCheckedChange={(checked) => setFormData({
+                        ...formData,
+                        pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, enabled: checked } }
+                      })}
+                    />
+                    <Label htmlFor="shared-enabled" className="cursor-pointer">Shared Experience</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="group-enabled"
+                      checked={formData.pricing?.group?.enabled}
+                      onCheckedChange={(checked) => setFormData({
+                        ...formData,
+                        pricing: { ...formData.pricing, group: { ...formData.pricing.group, enabled: checked } }
+                      })}
+                    />
+                    <Label htmlFor="group-enabled" className="cursor-pointer">Group Booking</Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Private Pricing */}
+              {formData.pricing?.private?.enabled && (
+                <Card className="bg-gray-50">
+                  <CardContent className="p-4 space-y-3">
+                    <h4 className="font-semibold text-[#2C2C2C]">Private Tour Pricing</h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label>First Adult (₹)</Label>
+                        <Input
+                          type="number"
+                          value={formData.pricing.private.firstAdult}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, firstAdult: parseInt(e.target.value) } }
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Additional Adult (₹)</Label>
+                        <Input
+                          type="number"
+                          value={formData.pricing.private.additionalAdult}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, additionalAdult: parseInt(e.target.value) } }
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Child (₹)</Label>
+                        <Input
+                          type="number"
+                          value={formData.pricing.private.child}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, child: parseInt(e.target.value) } }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Shared Pricing */}
+              {formData.pricing?.shared?.enabled && (
+                <Card className="bg-gray-50">
+                  <CardContent className="p-4 space-y-3">
+                    <h4 className="font-semibold text-[#2C2C2C]">Shared Experience Pricing</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Adult (₹)</Label>
+                        <Input
+                          type="number"
+                          value={formData.pricing.shared.adult}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, adult: parseInt(e.target.value) } }
+                          })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Child (₹)</Label>
+                        <Input
+                          type="number"
+                          value={formData.pricing.shared.child}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, child: parseInt(e.target.value) } }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Group Pricing */}
+              {formData.pricing?.group?.enabled && (
+                <Card className="bg-gray-50">
+                  <CardContent className="p-4 space-y-3">
+                    <h4 className="font-semibold text-[#2C2C2C]">Group Booking Pricing</h4>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label>Tier 1 Min</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier1.min}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, min: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Tier 1 Max</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier1.max}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, max: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Price/Person (₹)</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier1.pricePerPerson}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, pricePerPerson: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label>Tier 2 Min</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier2.min}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, min: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Tier 2 Max</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier2.max}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, max: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Price/Person (₹)</Label>
+                          <Input
+                            type="number"
+                            value={formData.pricing.group.tier2.pricePerPerson}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, pricePerPerson: parseInt(e.target.value) } } }
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Add-ons Management */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Add-ons</Label>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setFormData({
+                      ...formData,
+                      addOns: [...formData.addOns, {
+                        id: `addon-${Date.now()}`,
+                        name: '',
+                        description: '',
+                        price: 0,
+                        calculationType: 'flat',
+                        active: true
+                      }]
+                    })}
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add New Add-on
+                  </Button>
+                </div>
+                {formData.addOns.map((addon, index) => (
+                  <Card key={addon.id} className="bg-gray-50">
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            checked={addon.active}
+                            onCheckedChange={(checked) => {
+                              const newAddOns = [...formData.addOns];
+                              newAddOns[index].active = checked;
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          />
+                          <Label>Active</Label>
+                        </div>
+                        {formData.addOns.length > 1 && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              const newAddOns = formData.addOns.filter((_, i) => i !== index);
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Add-on Name</Label>
+                          <Input
+                            value={addon.name}
+                            onChange={(e) => {
+                              const newAddOns = [...formData.addOns];
+                              newAddOns[index].name = e.target.value;
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Label>Price (₹)</Label>
+                          <Input
+                            type="number"
+                            value={addon.price}
+                            onChange={(e) => {
+                              const newAddOns = [...formData.addOns];
+                              newAddOns[index].price = parseInt(e.target.value);
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Calculation Type</Label>
+                          <Select
+                            value={addon.calculationType}
+                            onValueChange={(value) => {
+                              const newAddOns = [...formData.addOns];
+                              newAddOns[index].calculationType = value;
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="flat">Flat Price</SelectItem>
+                              <SelectItem value="per_person">Per Person</SelectItem>
+                              <SelectItem value="per_adult">Per Adult</SelectItem>
+                              <SelectItem value="per_3_guests">Per 3 Guests</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Input
+                            value={addon.description}
+                            placeholder="Optional"
+                            onChange={(e) => {
+                              const newAddOns = [...formData.addOns];
+                              newAddOns[index].description = e.target.value;
+                              setFormData({ ...formData, addOns: newAddOns });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
             {/* Form Actions */}
             <div className="flex gap-3 pt-4 border-t">
               <Button type="submit" className="bg-[#8B0000] hover:bg-[#6B0000] text-white">
