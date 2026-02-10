@@ -427,9 +427,15 @@ const ExperienceDetail = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="private">Private Tour</SelectItem>
-                        <SelectItem value="shared">Shared Experience</SelectItem>
-                        <SelectItem value="group">Group Booking (10+ guests)</SelectItem>
+                        {experience.pricing?.private?.enabled && (
+                          <SelectItem value="private">Private Tour</SelectItem>
+                        )}
+                        {experience.pricing?.shared?.enabled && (
+                          <SelectItem value="shared">Shared Experience</SelectItem>
+                        )}
+                        {experience.pricing?.group?.enabled && (
+                          <SelectItem value="group">Group Booking (10+ guests)</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
