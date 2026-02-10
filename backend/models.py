@@ -31,10 +31,13 @@ class InstagramReel(BaseModel):
 
 class TimeSlot(BaseModel):
     time: str
+    bookingType: str  # "private", "shared", "group"
+    maxCapacity: int
+    currentBookings: int = 0
     available: bool = True
 
-class Availability(BaseModel):
-    date: str
+class DayAvailability(BaseModel):
+    date: str  # Format: YYYY-MM-DD
     timeSlots: List[TimeSlot]
 
 class AddOn(BaseModel):
@@ -122,7 +125,7 @@ class ExperienceUpdate(BaseModel):
     bookingTypes: Optional[List[str]] = None
     pricing: Optional[PricingStructure] = None
     addOns: Optional[List[AddOn]] = None
-    availability: Optional[List[Availability]] = None
+    availability: Optional[List[DayAvailability]] = None
 
 # Booking Models
 class GuestCount(BaseModel):
