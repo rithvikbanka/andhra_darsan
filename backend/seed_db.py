@@ -136,6 +136,20 @@ experiences_data = [
             "https://images.unsplash.com/photo-1608820655002-9cb7b2e7de72",
             "https://images.unsplash.com/photo-1689733325483-7fbc938a8cfc",
             "https://images.pexels.com/photos/32471935/pexels-photo-32471935.jpeg"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
@@ -169,6 +183,20 @@ experiences_data = [
             "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg",
             "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
             "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
@@ -202,6 +230,20 @@ experiences_data = [
             "https://images.unsplash.com/photo-1615640325967-af4cfa4c0c6a",
             "https://images.pexels.com/photos/30776831/pexels-photo-30776831.jpeg",
             "https://images.unsplash.com/photo-1759738101532-0c2726bf68af"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
@@ -234,6 +276,20 @@ experiences_data = [
             "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg",
             "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
             "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
@@ -266,6 +322,20 @@ experiences_data = [
             "https://images.unsplash.com/photo-1689733325483-7fbc938a8cfc",
             "https://images.unsplash.com/photo-1608820655002-9cb7b2e7de72",
             "https://images.pexels.com/photos/32471935/pexels-photo-32471935.jpeg"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
@@ -299,6 +369,20 @@ experiences_data = [
             "https://images.unsplash.com/photo-1550996982-2036faf777d2",
             "https://images.pexels.com/photos/35739391/pexels-photo-35739391.jpeg",
             "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b"
+        ],
+        "instagramReels": [
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            },
+            {
+                "url": "https://www.instagram.com/reel/sample/",
+                "embedUrl": "https://www.instagram.com/reel/sample/embed"
+            }
         ]
     },
     {
