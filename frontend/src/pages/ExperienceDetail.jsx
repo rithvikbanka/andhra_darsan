@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus } from 'lucide-react';
+import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Label } from '../components/ui/label';
@@ -21,6 +21,7 @@ const ExperienceDetail = () => {
   const navigate = useNavigate();
   const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [bookingType, setBookingType] = useState('private');
   const [adults, setAdults] = useState(1);
@@ -45,6 +46,23 @@ const ExperienceDetail = () => {
     fetchExperience();
   }, [id]);
 
+  useEffect(() => {
+    setAddOns(prev => ({ ...prev, souvenirKits: adults }));
+  }, [adults]);
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!experience || !experience.images) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % experience.images.length
+      );
+    }, 4000); // 4 seconds per image
+
+    return () => clearInterval(interval);
+  }, [experience]);
+
   const fetchExperience = async () => {
     try {
       const data = await experienceAPI.getById(parseInt(id));
@@ -56,9 +74,17 @@ const ExperienceDetail = () => {
     }
   };
 
-  useEffect(() => {
-    setAddOns(prev => ({ ...prev, souvenirKits: adults }));
-  }, [adults]);
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? experience.images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      (prevIndex + 1) % experience.images.length
+    );
+  };
 
   if (loading) {
     return (
@@ -156,15 +182,61 @@ const ExperienceDetail = () => {
 
   return (
     <div className="bg-[#FAF7F0] min-h-screen pb-12">
-      {/* Image Slideshow */}
-      <div className="relative h-[60vh] bg-black">
-        <img
-          src={experience.images[0]}
-          alt={experience.title}
-          className="w-full h-full object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+      {/* Image Carousel */}
+      <div className="relative h-[60vh] bg-black overflow-hidden">
+        {/* Carousel Images */}
+        {experience.images.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={image}
+              alt={`${experience.title} - ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={handlePrevImage}
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all z-10"
+          aria-label="Previous image"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <button
+          onClick={handleNextImage}
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all z-10"
+          aria-label="Next image"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+
+        {/* Image Indicators */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {experience.images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentImageIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentImageIndex 
+                  ? 'bg-white w-8' 
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+              aria-label={`Go to image ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+        
+        {/* Content Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-10">
           <div className="max-w-7xl mx-auto">
             <span className="bg-[#8B0000] text-white text-sm px-4 py-1 rounded-full inline-block mb-4">
               {experience.category}
@@ -251,6 +323,31 @@ const ExperienceDetail = () => {
                 </ul>
               </CardContent>
             </Card>
+
+            {/* Instagram Reels Section */}
+            {experience.instagramReels && experience.instagramReels.length > 0 && (
+              <Card className="border-0 shadow-md">
+                <CardContent className="p-8">
+                  <h2 className="text-2xl font-serif font-bold text-[#2C2C2C] mb-6">
+                    See This Experience in Action
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {experience.instagramReels.map((reel, index) => (
+                      <div key={index} className="relative aspect-[9/16] rounded-lg overflow-hidden bg-black">
+                        <iframe
+                          src={reel.embedUrl}
+                          className="absolute inset-0 w-full h-full"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={`Instagram Reel ${index + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Reviews */}
             <Card className="border-0 shadow-md">
