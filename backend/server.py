@@ -178,6 +178,34 @@ async def create_booking(
     booking: BookingCreate,
     current_user: User = Depends(lambda token: get_current_user(token, db))
 ):
+    # Check availability and update capacity
+    experience = await db.experiences.find_one({"id": booking.experience_id})
+    if not experience:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    
+    # Find the time slot and check capacity
+    if experience.get("availability"):
+        for day_availability in experience["availability"]:
+            if day_availability["date"] == booking.date:
+                for slot in day_availability["timeSlots"]:
+                    if slot["time"] == booking.time and slot["bookingType"] == booking.booking_type:
+                        if slot["currentBookings"] >= slot["maxCapacity"]:
+                            raise HTTPException(
+                                status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="This time slot is fully booked"
+                            )
+                        # Update capacity
+                        slot["currentBookings"] += 1
+                        if slot["currentBookings"] >= slot["maxCapacity"]:
+                            slot["available"] = False
+                        break
+        
+        # Update experience availability
+        await db.experiences.update_one(
+            {"id": booking.experience_id},
+            {"$set": {"availability": experience["availability"]}}
+        )
+    
     booking_dict = booking.dict()
     booking_dict["user_id"] = current_user.id
     
@@ -229,6 +257,23 @@ async def cancel_booking(
     existing = await db.bookings.find_one({"id": booking_id, "user_id": current_user.id})
     if not existing:
         raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Release the time slot capacity
+    experience = await db.experiences.find_one({"id": existing["experience_id"]})
+    if experience and experience.get("availability"):
+        for day_availability in experience["availability"]:
+            if day_availability["date"] == existing["date"]:
+                for slot in day_availability["timeSlots"]:
+                    if slot["time"] == existing["time"] and slot["bookingType"] == existing["booking_type"]:
+                        slot["currentBookings"] = max(0, slot["currentBookings"] - 1)
+                        slot["available"] = True
+                        break
+        
+        # Update experience availability
+        await db.experiences.update_one(
+            {"id": existing["experience_id"]},
+            {"$set": {"availability": experience["availability"]}}
+        )
     
     await db.bookings.update_one(
         {"id": booking_id},
