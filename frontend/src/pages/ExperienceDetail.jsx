@@ -102,32 +102,58 @@ const ExperienceDetail = () => {
     );
   }
 
-  // Calculate pricing based on booking type
+  // Calculate pricing based on booking type using experience's pricing structure
   const calculatePrice = () => {
+    if (!experience.pricing) return { basePrice: 0, addOnsCost: 0, total: 0 };
+    
     let basePrice = 0;
     
-    if (bookingType === 'private') {
-      basePrice = 3600 + (adults - 1) * 2200 + kids * 1500;
-    } else if (bookingType === 'shared') {
-      basePrice = adults * 2500 + kids * 1700;
-    } else if (bookingType === 'group') {
-      if (groupSize <= 17) {
-        basePrice = groupSize * 2200;
-      } else if (groupSize <= 25) {
-        basePrice = groupSize * 2000;
-      }
+    if (bookingType === 'private' && experience.pricing.private?.enabled) {
+      basePrice = experience.pricing.private.firstAdult + 
+                  (adults - 1) * experience.pricing.private.additionalAdult + 
+                  kids * experience.pricing.private.child;
+    } else if (bookingType === 'shared' && experience.pricing.shared?.enabled) {
+      basePrice = adults * experience.pricing.shared.adult + 
+                  kids * experience.pricing.shared.child;
+    } else if (bookingType === 'group' && experience.pricing.group?.enabled) {
+      const tier = groupSize <= experience.pricing.group.tier1.max 
+        ? experience.pricing.group.tier1 
+        : experience.pricing.group.tier2;
+      basePrice = groupSize * tier.pricePerPerson;
     }
 
     let addOnsCost = 0;
-    if (addOns.pickup) {
-      const guestCount = adults + kids;
-      const tripCount = Math.ceil(guestCount / 3);
-      const pricePerTrip = addOns.pickupLocation === 'vijayawada' ? 1800 : 2300;
-      addOnsCost += tripCount * pricePerTrip;
-    }
-    addOnsCost += addOns.specialPuja * 500;
-    addOnsCost += addOns.souvenirKits * 1000;
-    if (addOns.photography) addOnsCost += 1500;
+    const guestCount = adults + kids;
+    
+    // Calculate add-ons based on their calculation type
+    (experience.addOns || []).forEach(addon => {
+      if (!addon.active) return;
+      
+      if (addon.name.includes('Pickup') && addOns.pickup && addOns.pickupLocation) {
+        const matchesLocation = 
+          (addon.name.includes('Vijayawada') && addOns.pickupLocation === 'vijayawada') ||
+          (addon.name.includes('Guntur') && addOns.pickupLocation === 'guntur');
+        
+        if (matchesLocation) {
+          if (addon.calculationType === 'per_3_guests') {
+            const tripCount = Math.ceil(guestCount / 3);
+            addOnsCost += tripCount * addon.price;
+          }
+        }
+      } else if (addon.name.includes('Special Puja')) {
+        if (addon.calculationType === 'per_person') {
+          addOnsCost += addOns.specialPuja * addon.price;
+        }
+      } else if (addon.name.includes('Souvenir')) {
+        if (addon.calculationType === 'per_adult') {
+          addOnsCost += addOns.souvenirKits * addon.price;
+        }
+      } else if (addon.name.includes('Photography') && addOns.photography) {
+        if (addon.calculationType === 'flat') {
+          addOnsCost += addon.price;
+        }
+      }
+    });
 
     const total = basePrice + addOnsCost;
     return { basePrice, addOnsCost, total };
