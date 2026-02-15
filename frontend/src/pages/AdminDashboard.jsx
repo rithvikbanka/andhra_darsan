@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Calendar, DollarSign, Package, Users, TrendingUp, Clock, Mail } from 'lucide-react';
+// TODO: Re-enable when hooking to backend
+// import axios from 'axios';
+import { Calendar, DollarSign, Package, Users, TrendingUp, Clock, Mail, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Demo mode: Using static data
+import { DEMO_EXPERIENCES, DEMO_BOOKINGS, DEMO_ADMIN_STATS, DEMO_SUBSCRIBERS } from '../demoData';
+
+// TODO: Re-enable when hooking to backend
+// const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// const API = `${BACKEND_URL}/api`;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -21,27 +26,39 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  // TODO: Re-enable when hooking to backend
+  // const fetchData = async () => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  //
+  //     const [statsRes, bookingsRes, experiencesRes, subscribersRes] = await Promise.all([
+  //       axios.get(`${API}/admin/stats`, config).catch(() => ({ data: { total_bookings: 0, confirmed_bookings: 0, cancelled_bookings: 0, total_revenue: 0, total_experiences: 0, total_users: 0, total_subscribers: 0 } })),
+  //       axios.get(`${API}/admin/bookings`, config).catch(() => ({ data: [] })),
+  //       axios.get(`${API}/experiences`).catch(() => ({ data: [] })),
+  //       axios.get(`${API}/admin/newsletter/subscribers`, config).catch(() => ({ data: [] }))
+  //     ]);
+  //
+  //     setStats(statsRes.data);
+  //     setBookings(bookingsRes.data);
+  //     setExperiences(experiencesRes.data);
+  //     setSubscribers(subscribersRes.data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching admin data:', error);
+  //     setLoading(false);
+  //   }
+  // };
 
-      const [statsRes, bookingsRes, experiencesRes, subscribersRes] = await Promise.all([
-        axios.get(`${API}/admin/stats`, config).catch(() => ({ data: { total_bookings: 0, confirmed_bookings: 0, cancelled_bookings: 0, total_revenue: 0, total_experiences: 0, total_users: 0, total_subscribers: 0 } })),
-        axios.get(`${API}/admin/bookings`, config).catch(() => ({ data: [] })),
-        axios.get(`${API}/experiences`).catch(() => ({ data: [] })),
-        axios.get(`${API}/admin/newsletter/subscribers`, config).catch(() => ({ data: [] }))
-      ]);
-
-      setStats(statsRes.data);
-      setBookings(bookingsRes.data);
-      setExperiences(experiencesRes.data);
-      setSubscribers(subscribersRes.data);
+  // Demo mode: Use static data
+  const fetchData = () => {
+    setTimeout(() => {
+      setStats(DEMO_ADMIN_STATS);
+      setBookings(DEMO_BOOKINGS);
+      setExperiences(DEMO_EXPERIENCES);
+      setSubscribers(DEMO_SUBSCRIBERS);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching admin data:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   if (loading) {
@@ -58,10 +75,19 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-serif font-bold mb-2">Admin Dashboard</h1>
           <p className="text-white/90">Manage bookings, experiences, and view analytics</p>
+          <p className="text-white/70 text-sm mt-1">(Demo Mode)</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Demo Mode Notice */}
+        <div className="bg-[#FFF8DC] border border-[#DAA520]/30 text-[#8B4513] px-4 py-3 rounded-md text-sm mb-8 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <strong>Demo Mode:</strong> This admin dashboard displays sample data. All statistics and bookings shown are for demonstration purposes. Create, update, and delete operations are disabled.
+          </div>
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="border-0 shadow-lg">
@@ -205,7 +231,7 @@ const AdminDashboard = () => {
                       <div key={booking.id} className="border-b border-gray-200 pb-4 last:border-0">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h4 className="font-semibold text-[#2C2C2C]">{booking.experience_title}</h4>
+                            <h4 className="font-semibold text-[#2C2C2C]">{booking.experience_title || booking.experienceTitle}</h4>
                             <p className="text-sm text-[#5C5C5C]">{booking.customer_name} • {booking.customer_email}</p>
                           </div>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -226,7 +252,7 @@ const AdminDashboard = () => {
                             {booking.guests.adults} Adults, {booking.guests.kids} Kids
                           </span>
                           <span className="font-semibold text-[#8B0000]">
-                            ₹{booking.total_price.toLocaleString()}
+                            ₹{(booking.total_price || booking.totalPaid).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -255,7 +281,7 @@ const AdminDashboard = () => {
                       <div className="flex justify-between items-start">
                         <div className="flex gap-4">
                           <img
-                            src={exp.image}
+                            src={exp.image || exp.imageUrl}
                             alt={exp.title}
                             className="w-20 h-20 object-cover rounded-lg"
                           />

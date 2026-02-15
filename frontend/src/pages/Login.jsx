@@ -4,7 +4,12 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { authAPI } from '../services/api';
+import { AlertCircle } from 'lucide-react';
+// TODO: Re-enable when hooking to backend
+// import { authAPI } from '../services/api';
+
+// Demo mode: Using static data
+import { DEMO_USER } from '../demoData';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,39 +22,62 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showDemoMessage, setShowDemoMessage] = useState(false);
 
-  const handleSubmit = async (e) => {
+  // TODO: Re-enable when hooking to backend
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+  //   setLoading(true);
+  //
+  //   try {
+  //     if (isLogin) {
+  //       // Login
+  //       const response = await authAPI.login(formData.email, formData.password);
+  //       localStorage.setItem('token', response.access_token);
+  //       
+  //       // Get user details
+  //       const user = await authAPI.getMe();
+  //       localStorage.setItem('user', JSON.stringify(user));
+  //       
+  //       navigate('/dashboard');
+  //     } else {
+  //       // Register
+  //       const response = await authAPI.register(formData);
+  //       localStorage.setItem('token', response.access_token);
+  //       
+  //       // Get user details
+  //       const user = await authAPI.getMe();
+  //       localStorage.setItem('user', JSON.stringify(user));
+  //       
+  //       navigate('/dashboard');
+  //     }
+  //   } catch (err) {
+  //     console.error('Auth error:', err);
+  //     setError(err.response?.data?.detail || 'Authentication failed');
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Simulate login/signup without actual API calls
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    try {
-      if (isLogin) {
-        // Login
-        const response = await authAPI.login(formData.email, formData.password);
-        localStorage.setItem('token', response.access_token);
-        
-        // Get user details
-        const user = await authAPI.getMe();
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        navigate('/dashboard');
-      } else {
-        // Register
-        const response = await authAPI.register(formData);
-        localStorage.setItem('token', response.access_token);
-        
-        // Get user details
-        const user = await authAPI.getMe();
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      console.error('Auth error:', err);
-      setError(err.response?.data?.detail || 'Authentication failed');
+    // Simulate loading delay
+    setTimeout(() => {
+      // Demo mode: Set demo user in localStorage and show message
+      localStorage.setItem('token', 'demo-token-12345');
+      localStorage.setItem('user', JSON.stringify(DEMO_USER));
+      setShowDemoMessage(true);
       setLoading(false);
-    }
+      
+      // Navigate to dashboard after showing the message
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+    }, 500);
   };
 
   return (
@@ -71,6 +99,16 @@ const Login = () => {
           </p>
         </CardHeader>
         <CardContent>
+          {/* Demo Mode Message */}
+          {showDemoMessage && (
+            <div className="bg-[#FFF8DC] border border-[#DAA520]/30 text-[#8B4513] px-4 py-3 rounded-md text-sm mb-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong>Demo Mode:</strong> Authentication is disabled. You're being logged in as a demo user. This page is only for preview purposes.
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
@@ -136,7 +174,7 @@ const Login = () => {
             <Button
               type="submit"
               className="w-full bg-[#8B0000] hover:bg-[#6B0000] text-white py-6"
-              disabled={loading}
+              disabled={loading || showDemoMessage}
             >
               {loading ? (isLogin ? 'Logging in...' : 'Creating account...') : (isLogin ? 'Login' : 'Create Account')}
             </Button>

@@ -9,7 +9,7 @@ export const experiences = [
     duration: "4 hours",
     price: 2500,
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1759738101532-0c2726bf68af",
+    image: "https://cdn.shopify.com/s/files/1/0677/7356/3162/files/IMG_20211110_153731_1024x1024.jpg",
     featured: true,
     description: "Immerse yourself in the ancient art of Mangalagiri handloom weaving. Meet master weavers, understand the intricate process, and witness the creation of iconic cotton sarees.",
     highlights: [
@@ -29,9 +29,9 @@ export const experiences = [
       "Photo documentation"
     ],
     images: [
-      "https://images.unsplash.com/photo-1759738101532-0c2726bf68af",
+      "https://cdn.shopify.com/s/files/1/0677/7356/3162/files/IMG_20211110_153731_1024x1024.jpg",
       "https://images.pexels.com/photos/30776831/pexels-photo-30776831.jpeg",
-      "https://images.unsplash.com/photo-1615640325967-af4cfa4c0c6a"
+      "https://www.ecobasketindia.com/cdn/shop/files/wooden-kondapalli-sreemantham-set-6296302.jpg"
     ]
   },
   {
@@ -42,7 +42,7 @@ export const experiences = [
     duration: "3 hours",
     price: 2200,
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1728910156510-77488f19b152",
+    image: "https://cdn.shopify.com/s/files/1/0651/8895/4328/files/Jaggery_Kaju_Badam_Putharekulu_5.png",
     featured: true,
     description: "A gastronomic journey through authentic Andhra cuisine. Learn traditional recipes, understand spice combinations, and savor the flavors that define Andhra culture.",
     highlights: [
@@ -62,7 +62,7 @@ export const experiences = [
       "Bottled water"
     ],
     images: [
-      "https://images.unsplash.com/photo-1728910156510-77488f19b152",
+      "https://cdn.shopify.com/s/files/1/0651/8895/4328/files/Jaggery_Kaju_Badam_Putharekulu_5.png",
       "https://images.unsplash.com/photo-1515931215890-366d3990cf8d",
       "https://images.pexels.com/photos/35041654/pexels-photo-35041654.jpeg"
     ]
@@ -75,7 +75,7 @@ export const experiences = [
     duration: "2 hours",
     price: 1800,
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1608820655002-9cb7b2e7de72",
+    image: "https://images.unsplash.com/photo-1710237893364-ff94968aa034?q=80&w=3532",
     featured: true,
     description: "Experience the vibrant coastal culture of Visakhapatnam. Walk along the iconic RK Beach, understand local maritime traditions, and witness the daily life of fishing communities.",
     highlights: [
@@ -94,8 +94,8 @@ export const experiences = [
       "Bottled water"
     ],
     images: [
-      "https://images.unsplash.com/photo-1608820655002-9cb7b2e7de72",
-      "https://images.unsplash.com/photo-1689733325483-7fbc938a8cfc",
+      "https://images.unsplash.com/photo-1710237893364-ff94968aa034?q=80&w=3532",
+      "https://currentaffairs.adda247.com/wp-content/uploads/multisite/sites/5/2024/06/03181005/Length-of-the-Krishna-River.png",
       "https://images.pexels.com/photos/32471935/pexels-photo-32471935.jpeg"
     ]
   },
@@ -107,7 +107,7 @@ export const experiences = [
     duration: "5 hours",
     price: 3200,
     rating: 4.9,
-    image: "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg",
     featured: true,
     description: "Beyond the main temple - discover the hidden spiritual and cultural gems of Tirupati. Explore ancient temples, sacred tanks, and understand the rich mythology of this holy city.",
     highlights: [
@@ -127,9 +127,9 @@ export const experiences = [
       "Photo documentation"
     ],
     images: [
-      "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg",
-      "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
-      "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg"
+      "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg",
+      "https://hblimg.mmtcdn.com/content/hubble/img/puri/mmt/activities/m_Puri_activity_Mangalagiri%20Temple_l_366_577.jpg",
+      "https://i0.wp.com/www.manjulikapramod.com/wp-content/uploads/2021/02/The-renovated-front-portion-of-the-fort-that-leads-into-the-museum-scaled.jpg"
     ]
   },
   {
@@ -140,7 +140,7 @@ export const experiences = [
     duration: "3 hours",
     price: 2000,
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1615640325967-af4cfa4c0c6a",
+    image: "https://www.ecobasketindia.com/cdn/shop/files/wooden-kondapalli-sreemantham-set-6296302.jpg",
     featured: true,
     description: "Witness the centuries-old craft of Kondapalli toy making. Meet artisan families, understand the traditional techniques, and create your own wooden toy.",
     highlights: [
@@ -160,9 +160,9 @@ export const experiences = [
       "Photo opportunities"
     ],
     images: [
-      "https://images.unsplash.com/photo-1615640325967-af4cfa4c0c6a",
+      "https://www.ecobasketindia.com/cdn/shop/files/wooden-kondapalli-sreemantham-set-6296302.jpg",
       "https://images.pexels.com/photos/30776831/pexels-photo-30776831.jpeg",
-      "https://images.unsplash.com/photo-1759738101532-0c2726bf68af"
+      "https://cdn.shopify.com/s/files/1/0677/7356/3162/files/IMG_20211110_153731_1024x1024.jpg"
     ]
   },
   {
@@ -173,7 +173,7 @@ export const experiences = [
     duration: "3 hours",
     price: 1900,
     rating: 4.6,
-    image: "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg",
+    image: "https://i0.wp.com/www.manjulikapramod.com/wp-content/uploads/2021/02/The-renovated-front-portion-of-the-fort-that-leads-into-the-museum-scaled.jpg",
     featured: true,
     description: "Explore the historic Kondapalli Fort, perched atop a hill. Discover 14th-century architecture, panoramic views, and tales of royal dynasties.",
     highlights: [
@@ -192,9 +192,9 @@ export const experiences = [
       "Photography assistance"
     ],
     images: [
-      "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg",
-      "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
-      "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg"
+      "https://i0.wp.com/www.manjulikapramod.com/wp-content/uploads/2021/02/The-renovated-front-portion-of-the-fort-that-leads-into-the-museum-scaled.jpg",
+      "https://hblimg.mmtcdn.com/content/hubble/img/puri/mmt/activities/m_Puri_activity_Mangalagiri%20Temple_l_366_577.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg"
     ]
   },
   {
@@ -205,7 +205,7 @@ export const experiences = [
     duration: "2 hours",
     price: 1500,
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1689733325483-7fbc938a8cfc",
+    image: "https://currentaffairs.adda247.com/wp-content/uploads/multisite/sites/5/2024/06/03181005/Length-of-the-Krishna-River.png",
     featured: false,
     description: "A serene boat journey on the sacred Krishna River. Experience the spiritual significance, witness riverside temples, and understand the river's cultural importance.",
     highlights: [
@@ -224,8 +224,8 @@ export const experiences = [
       "Bottled water"
     ],
     images: [
-      "https://images.unsplash.com/photo-1689733325483-7fbc938a8cfc",
-      "https://images.unsplash.com/photo-1608820655002-9cb7b2e7de72",
+      "https://currentaffairs.adda247.com/wp-content/uploads/multisite/sites/5/2024/06/03181005/Length-of-the-Krishna-River.png",
+      "https://images.unsplash.com/photo-1710237893364-ff94968aa034?q=80&w=3532",
       "https://images.pexels.com/photos/32471935/pexels-photo-32471935.jpeg"
     ]
   },
@@ -237,7 +237,7 @@ export const experiences = [
     duration: "3 hours",
     price: 2100,
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1550996982-2036faf777d2",
+    image: "https://static2.tripoto.com/media/filter/tst/img/24065/Image/1703065489_2.jpg.webp",
     featured: false,
     description: "Journey through ancient Buddhist heritage at Amaravati. Explore the historic stupa site, understand early Buddhist art and architecture, and discover archaeological treasures.",
     highlights: [
@@ -257,20 +257,20 @@ export const experiences = [
       "Photo opportunities"
     ],
     images: [
-      "https://images.unsplash.com/photo-1550996982-2036faf777d2",
+      "https://static2.tripoto.com/media/filter/tst/img/24065/Image/1703065489_2.jpg.webp",
       "https://images.pexels.com/photos/35739391/pexels-photo-35739391.jpeg",
-      "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b"
+      "https://hblimg.mmtcdn.com/content/hubble/img/puri/mmt/activities/m_Puri_activity_Mangalagiri%20Temple_l_366_577.jpg"
     ]
   },
   {
     id: 9,
     title: "Lakshmi Narasimha Temple Experience",
     category: "Temples & Spirituality",
-    location: "Amaravati – Vijayawada",
+    location: "Mangalagiri – Guntur District",
     duration: "2.5 hours",
     price: 2800,
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
+    image: "https://hblimg.mmtcdn.com/content/hubble/img/puri/mmt/activities/m_Puri_activity_Mangalagiri%20Temple_l_366_577.jpg",
     featured: false,
     description: "Experience the spiritual grandeur of Mangalagiri's Lakshmi Narasimha Temple. VIP darshan, sacred rituals, and deep cultural narratives of this ancient hilltop shrine.",
     highlights: [
@@ -291,9 +291,9 @@ export const experiences = [
       "Insider cultural insights"
     ],
     images: [
-      "https://images.unsplash.com/photo-1566915682737-3e97a7eed93b",
-      "https://images.pexels.com/photos/12517431/pexels-photo-12517431.jpeg",
-      "https://images.pexels.com/photos/8230161/pexels-photo-8230161.jpeg"
+      "https://hblimg.mmtcdn.com/content/hubble/img/puri/mmt/activities/m_Puri_activity_Mangalagiri%20Temple_l_366_577.jpg",
+      "https://i0.wp.com/www.manjulikapramod.com/wp-content/uploads/2021/02/The-renovated-front-portion-of-the-fort-that-leads-into-the-museum-scaled.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg"
     ]
   }
 ];
@@ -304,7 +304,7 @@ export const testimonials = [
     name: "Priya Menon",
     location: "Singapore",
     text: "Not a tour, but a cultural initiation into Andhra. The handloom experience connected me to my roots in ways I never imagined.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    image: "https://img.freepik.com/free-photo/closeup-smiling-young-beautiful-indian-woman_1262-2261.jpg",
     rating: 5
   },
   {
@@ -312,7 +312,7 @@ export const testimonials = [
     name: "Rajesh Kumar",
     location: "Bangalore",
     text: "The Mangalagiri temple experience was transformative. Our facilitator brought the mythology to life with such depth and authenticity.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    image: "https://plus.unsplash.com/premium_photo-1682089787056-9ac0c78a2ac2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aW5kaWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
     rating: 5
   },
   {
@@ -320,7 +320,7 @@ export const testimonials = [
     name: "Anita Reddy",
     location: "USA",
     text: "As an NRI, this was the perfect way to show my kids our cultural heritage. Professional, respectful, and deeply meaningful.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+    image: "https://img.freepik.com/free-photo/portrait-beautiful-woman-wearing-traditional-sari-garment_23-2149565121.jpg",
     rating: 5
   },
   {
@@ -328,7 +328,7 @@ export const testimonials = [
     name: "David Thompson",
     location: "London",
     text: "Far beyond typical tourism. The culinary experience was an anthropological journey through Andhra's soul. Exceptional!",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    image: "https://static.wixstatic.com/media/46ccc2_a3062c765eee46dda40ea47dbede8431~mv2.jpeg/v1/fit/w_320,h_320,q_90,enc_avif,quality_auto/46ccc2_a3062c765eee46dda40ea47dbede8431~mv2.jpeg",
     rating: 5
   }
 ];

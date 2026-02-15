@@ -1,0 +1,27 @@
+{
+  "name": "andhra_darsan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vyshnavikorlakunta-tech/andhra_darsan.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vyshnavikorlakunta-tech/andhra_darsan/issues"
+  },
+  "homepage": "https://github.com/vyshnavikorlakunta-tech/andhra_darsan#readme",
+  "devDependencies": {
+    "@craco/craco": "^7.1.0"
+  }
+}

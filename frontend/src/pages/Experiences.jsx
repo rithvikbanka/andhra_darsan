@@ -6,7 +6,11 @@ import { Card, CardContent } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
 import { Label } from '../components/ui/label';
 import { Slider } from '../components/ui/slider';
-import { experienceAPI } from '../services/api';
+// TODO: Re-enable when hooking to backend
+// import { experienceAPI } from '../services/api';
+
+// Demo mode: Using static data instead of API calls
+import { DEMO_EXPERIENCES } from '../demoData';
 
 const Experiences = () => {
   const [searchParams] = useSearchParams();
@@ -27,15 +31,25 @@ const Experiences = () => {
     fetchExperiences();
   }, []);
 
-  const fetchExperiences = async () => {
-    try {
-      const data = await experienceAPI.getAll();
-      setExperiences(data);
+  // TODO: Re-enable when hooking to backend
+  // const fetchExperiences = async () => {
+  //   try {
+  //     const data = await experienceAPI.getAll();
+  //     setExperiences(data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching experiences:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Load static data instead of API call
+  const fetchExperiences = () => {
+    // Simulate loading delay for realistic feel
+    setTimeout(() => {
+      setExperiences(DEMO_EXPERIENCES);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching experiences:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   const categories = [
@@ -61,6 +75,23 @@ const Experiences = () => {
     'Half-day',
     'Full-day'
   ];
+
+  // Helper function to check duration filter
+  const matchesDuration = (expDuration, filterDuration) => {
+    const hours = parseFloat(expDuration);
+    switch (filterDuration) {
+      case 'Under 2 hours':
+        return hours < 2;
+      case '2–4 hours':
+        return hours >= 2 && hours <= 4;
+      case 'Half-day':
+        return hours > 4 && hours <= 6;
+      case 'Full-day':
+        return hours > 6;
+      default:
+        return true;
+    }
+  };
 
   const handleCategoryChange = (category) => {
     setFilters((prev) => ({
@@ -90,12 +121,22 @@ const Experiences = () => {
   };
 
   const filteredExperiences = experiences.filter((exp) => {
+    // Category filter
     if (filters.categories.length > 0 && !filters.categories.includes(exp.category)) {
       return false;
     }
+    // Location filter
     if (filters.locations.length > 0 && !filters.locations.includes(exp.location)) {
       return false;
     }
+    // Duration filter
+    if (filters.durations.length > 0) {
+      const matchesAnyDuration = filters.durations.some(d => matchesDuration(exp.duration, d));
+      if (!matchesAnyDuration) {
+        return false;
+      }
+    }
+    // Price range filter
     if (exp.price < filters.priceRange[0] || exp.price > filters.priceRange[1]) {
       return false;
     }
@@ -252,7 +293,7 @@ const Experiences = () => {
                   >
                     <div className="relative h-56 overflow-hidden">
                       <img
-                        src={exp.image}
+                        src={exp.image || exp.imageUrl}
                         alt={exp.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -265,6 +306,13 @@ const Experiences = () => {
                         <Star className="w-3 h-3 fill-[#DAA520] text-[#DAA520]" />
                         <span className="text-xs font-semibold">{exp.rating}</span>
                       </div>
+                      {exp.featured && (
+                        <div className="absolute bottom-4 left-4">
+                          <span className="bg-[#DAA520] text-white text-xs px-3 py-1 rounded-full">
+                            Featured
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <CardContent className="p-6">
                       <h3 className="text-xl font-serif font-bold text-[#2C2C2C] mb-3 group-hover:text-[#8B0000] transition-colors">

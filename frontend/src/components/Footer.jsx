@@ -3,28 +3,38 @@ import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { newsletterAPI } from '../services/api';
+// TODO: Re-enable when hooking to backend
+// import { newsletterAPI } from '../services/api';
+import logoFull from '../assets/logo-full.png';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleNewsletterSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+  // TODO: Re-enable when hooking to backend
+  // const handleNewsletterSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setMessage('');
+  //
+  //   try {
+  //     await newsletterAPI.subscribe(email);
+  //     setMessage('Successfully subscribed to newsletter!');
+  //     setEmail('');
+  //   } catch (error) {
+  //     setMessage(error.response?.data?.detail || 'Subscription failed. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //     setTimeout(() => setMessage(''), 5000);
+  //   }
+  // };
 
-    try {
-      await newsletterAPI.subscribe(email);
-      setMessage('Successfully subscribed to newsletter!');
-      setEmail('');
-    } catch (error) {
-      setMessage(error.response?.data?.detail || 'Subscription failed. Please try again.');
-    } finally {
-      setLoading(false);
-      setTimeout(() => setMessage(''), 5000);
-    }
+  // Demo mode: Show demo message instead of actual subscription
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    setMessage('Demo mode: Newsletter subscription is disabled. This is for preview purposes only.');
+    setTimeout(() => setMessage(''), 5000);
   };
 
   return (
@@ -33,9 +43,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-xl font-serif font-bold text-[#DAA520] mb-4">
-              Andhra Darsan
-            </h3>
+            <img
+              src={logoFull}
+              alt="Andhra Darsan"
+              className="h-6 w-auto mb-4"
+            />
+            {/* Previous text logo kept for reference: <h3 className="text-xl font-serif font-bold text-[#DAA520] mb-4">Andhra Darsan</h3> */}
             <p className="text-sm text-gray-300 leading-relaxed mb-4">
               Experience Andhra. Become Andhra. Curated cultural journeys, sacred rituals, crafts, and stories of Andhra Pradesh.
             </p>
@@ -156,7 +169,7 @@ const Footer = () => {
                 </Button>
               </form>
               {message && (
-                <p className={`text-xs mt-2 ${message.includes('Success') ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-xs mt-2 ${message.includes('Success') || message.includes('Demo') ? 'text-green-400' : 'text-red-400'}`}>
                   {message}
                 </p>
               )}

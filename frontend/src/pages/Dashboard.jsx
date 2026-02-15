@@ -1,36 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Download, Edit, Trash2, LogOut } from 'lucide-react';
+import { Calendar, MapPin, Users, Download, Edit, Trash2, LogOut, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { bookingAPI } from '../services/api';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../components/ui/dialog';
+// TODO: Re-enable when hooking to backend
+// import { bookingAPI } from '../services/api';
+
+// Demo mode: Using static data
+import { DEMO_USER, DEMO_BOOKINGS } from '../demoData';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [demoActionMessage, setDemoActionMessage] = useState('');
 
   useEffect(() => {
+    // Check for user in localStorage
     const userData = localStorage.getItem('user');
     if (!userData) {
-      navigate('/login');
-      return;
+      // Demo mode: Allow access without login, set demo user
+      localStorage.setItem('user', JSON.stringify(DEMO_USER));
+      localStorage.setItem('token', 'demo-token-12345');
+      setUser(DEMO_USER);
+    } else {
+      setUser(JSON.parse(userData));
     }
-    setUser(JSON.parse(userData));
     fetchBookings();
   }, []);
 
-  const fetchBookings = async () => {
-    try {
-      const data = await bookingAPI.getAll();
-      setBookings(data);
+  // TODO: Re-enable when hooking to backend
+  // const fetchBookings = async () => {
+  //   try {
+  //     const data = await bookingAPI.getAll();
+  //     setBookings(data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching bookings:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Use static bookings data
+  const fetchBookings = () => {
+    setTimeout(() => {
+      setBookings(DEMO_BOOKINGS);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   const handleLogout = () => {
@@ -39,17 +65,24 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  const handleCancelBooking = async (bookingId) => {
-    if (window.confirm('Are you sure you want to cancel this booking?')) {
-      try {
-        await bookingAPI.cancel(bookingId);
-        alert(`Booking ${bookingId} cancelled successfully!`);
-        fetchBookings();
-      } catch (error) {
-        console.error('Error cancelling booking:', error);
-        alert('Failed to cancel booking');
-      }
-    }
+  // TODO: Re-enable when hooking to backend
+  // const handleCancelBooking = async (bookingId) => {
+  //   if (window.confirm('Are you sure you want to cancel this booking?')) {
+  //     try {
+  //       await bookingAPI.cancel(bookingId);
+  //       alert(`Booking ${bookingId} cancelled successfully!`);
+  //       fetchBookings();
+  //     } catch (error) {
+  //       console.error('Error cancelling booking:', error);
+  //       alert('Failed to cancel booking');
+  //     }
+  //   }
+  // };
+
+  // Demo mode: Show demo message instead of actual cancellation
+  const handleCancelBooking = (bookingId) => {
+    setDemoActionMessage(`Demo only: Booking ${bookingId} cancellation is not available in demo mode. No real booking was affected.`);
+    setShowDemoModal(true);
   };
 
   const upcomingBookings = bookings.filter(b => b.status === 'confirmed');
@@ -65,6 +98,26 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#FAF7F0]">
+      {/* Demo Mode Modal */}
+      <Dialog open={showDemoModal} onOpenChange={setShowDemoModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-serif text-[#8B0000] flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              Demo Mode
+            </DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              <p className="text-[#5C5C5C]">{demoActionMessage}</p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end mt-4">
+            <Button onClick={() => setShowDemoModal(false)}>
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="bg-gradient-to-r from-[#8B0000] to-[#6B0000] text-white py-12 px-6">
         <div className="max-w-6xl mx-auto">
@@ -74,6 +127,7 @@ const Dashboard = () => {
                 Welcome, {user.name}
               </h1>
               <p className="text-white/90">{user.email}</p>
+              <p className="text-white/70 text-sm mt-1">(Demo Mode)</p>
             </div>
             <Button
               variant="outline"
@@ -88,6 +142,14 @@ const Dashboard = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* Demo Mode Notice */}
+        <div className="bg-[#FFF8DC] border border-[#DAA520]/30 text-[#8B4513] px-4 py-3 rounded-md text-sm mb-8 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <strong>Demo Mode:</strong> This dashboard shows sample booking data. Cancellation and modification features are disabled. All displayed bookings are for demonstration purposes only.
+          </div>
+        </div>
+
         <Tabs defaultValue="upcoming" className="space-y-8">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="upcoming">Upcoming Bookings</TabsTrigger>
@@ -120,7 +182,7 @@ const Dashboard = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-2xl text-[#2C2C2C] mb-2">
-                          {booking.experienceTitle}
+                          {booking.experienceTitle || booking.experience_title}
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-[#5C5C5C]">
                           <div className="flex items-center gap-2">
@@ -153,14 +215,14 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <span className="text-[#5C5C5C]">Type: </span>
-                            <span className="font-semibold">{booking.type}</span>
+                            <span className="font-semibold">{booking.type || booking.booking_type}</span>
                           </div>
                         </div>
                       </div>
                       <div>
                         <h4 className="font-semibold text-[#2C2C2C] mb-3">Add-ons</h4>
                         <ul className="space-y-1 text-sm">
-                          {booking.addOns.map((addOn, index) => (
+                          {(booking.addOns || []).map((addOn, index) => (
                             <li key={index} className="text-[#5C5C5C]">• {addOn}</li>
                           ))}
                         </ul>
@@ -169,7 +231,7 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between pt-6 border-t border-gray-200">
                       <div>
                         <span className="text-sm text-[#5C5C5C]">Total Paid</span>
-                        <div className="text-2xl font-bold text-[#8B0000]">₹{booking.total_price.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-[#8B0000]">₹{(booking.total_price || booking.totalPaid).toLocaleString()}</div>
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -216,7 +278,7 @@ const Dashboard = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-xl text-[#2C2C2C] mb-2">
-                          {booking.experienceTitle}
+                          {booking.experienceTitle || booking.experience_title}
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-[#5C5C5C]">
                           <div className="flex items-center gap-2">
@@ -243,7 +305,7 @@ const Dashboard = () => {
                           <span className="text-sm">{booking.guests.adults} Adults, {booking.guests.kids} Kids</span>
                         </div>
                         <div className="text-sm text-[#5C5C5C]">
-                          Total Paid: <span className="font-bold text-[#2C2C2C]">₹{booking.total_price.toLocaleString()}</span>
+                          Total Paid: <span className="font-bold text-[#2C2C2C]">₹{(booking.total_price || booking.totalPaid).toLocaleString()}</span>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">

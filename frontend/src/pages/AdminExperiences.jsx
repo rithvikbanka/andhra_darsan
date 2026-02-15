@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Plus, Edit, Trash2, X } from 'lucide-react';
+// TODO: Re-enable when hooking to backend
+// import axios from 'axios';
+import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -20,10 +21,15 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '../components/ui/dialog';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Demo mode: Using static data
+import { DEMO_EXPERIENCES } from '../demoData';
+
+// TODO: Re-enable when hooking to backend
+// const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// const API = `${BACKEND_URL}/api`;
 
 const AdminExperiences = () => {
   const navigate = useNavigate();
@@ -31,6 +37,8 @@ const AdminExperiences = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingExperience, setEditingExperience] = useState(null);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [demoActionMessage, setDemoActionMessage] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -83,15 +91,24 @@ const AdminExperiences = () => {
     fetchExperiences();
   }, []);
 
-  const fetchExperiences = async () => {
-    try {
-      const response = await axios.get(`${API}/experiences`);
-      setExperiences(response.data);
+  // TODO: Re-enable when hooking to backend
+  // const fetchExperiences = async () => {
+  //   try {
+  //     const response = await axios.get(`${API}/experiences`);
+  //     setExperiences(response.data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching experiences:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Use static data
+  const fetchExperiences = () => {
+    setTimeout(() => {
+      setExperiences(DEMO_EXPERIENCES);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching experiences:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   const handleEdit = (experience) => {
@@ -103,7 +120,7 @@ const AdminExperiences = () => {
       duration: experience.duration,
       price: experience.price.toString(),
       rating: experience.rating.toString(),
-      image: experience.image,
+      image: experience.image || experience.imageUrl,
       featured: experience.featured,
       description: experience.description,
       highlights: experience.highlights,
@@ -127,54 +144,77 @@ const AdminExperiences = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this experience?')) return;
+  // TODO: Re-enable when hooking to backend
+  // const handleDelete = async (id) => {
+  //   if (!window.confirm('Are you sure you want to delete this experience?')) return;
+  //
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  //     await axios.delete(`${API}/experiences/${id}`, config);
+  //     alert('Experience deleted successfully!');
+  //     fetchExperiences();
+  //   } catch (error) {
+  //     console.error('Error deleting experience:', error);
+  //     alert(error.response?.data?.detail || 'Failed to delete experience. You may need admin access.');
+  //   }
+  // };
 
-    try {
-      const token = localStorage.getItem('token');
-      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      await axios.delete(`${API}/experiences/${id}`, config);
-      alert('Experience deleted successfully!');
-      fetchExperiences();
-    } catch (error) {
-      console.error('Error deleting experience:', error);
-      alert(error.response?.data?.detail || 'Failed to delete experience. You may need admin access.');
-    }
+  // Demo mode: Show demo message instead of actual deletion
+  const handleDelete = (id) => {
+    const exp = experiences.find(e => e.id === id);
+    setDemoActionMessage(`Demo only: "${exp?.title}" deletion is not available in demo mode. No real data was affected.`);
+    setShowDemoModal(true);
   };
 
-  const handleSubmit = async (e) => {
+  // TODO: Re-enable when hooking to backend
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  //
+  //     const payload = {
+  //       ...formData,
+  //       price: parseInt(formData.price),
+  //       rating: parseFloat(formData.rating),
+  //       highlights: formData.highlights.filter(h => h.trim() !== ''),
+  //       included: formData.included.filter(i => i.trim() !== ''),
+  //       images: formData.images.filter(img => img.trim() !== ''),
+  //       instagramReels: formData.instagramReels.filter(reel => reel.url.trim() !== '')
+  //     };
+  //
+  //     if (editingExperience) {
+  //       await axios.put(`${API}/experiences/${editingExperience.id}`, payload, config);
+  //       alert('Experience updated successfully!');
+  //     } else {
+  //       await axios.post(`${API}/experiences`, payload, config);
+  //       alert('Experience created successfully!');
+  //     }
+  //
+  //     setShowForm(false);
+  //     setEditingExperience(null);
+  //     resetForm();
+  //     fetchExperiences();
+  //   } catch (error) {
+  //     console.error('Error saving experience:', error);
+  //     alert(error.response?.data?.detail || 'Failed to save experience. You may need admin access.');
+  //   }
+  // };
+
+  // Demo mode: Show demo message instead of actual submission
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    try {
-      const token = localStorage.getItem('token');
-      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-
-      const payload = {
-        ...formData,
-        price: parseInt(formData.price),
-        rating: parseFloat(formData.rating),
-        highlights: formData.highlights.filter(h => h.trim() !== ''),
-        included: formData.included.filter(i => i.trim() !== ''),
-        images: formData.images.filter(img => img.trim() !== ''),
-        instagramReels: formData.instagramReels.filter(reel => reel.url.trim() !== '')
-      };
-
-      if (editingExperience) {
-        await axios.put(`${API}/experiences/${editingExperience.id}`, payload, config);
-        alert('Experience updated successfully!');
-      } else {
-        await axios.post(`${API}/experiences`, payload, config);
-        alert('Experience created successfully!');
-      }
-
-      setShowForm(false);
-      setEditingExperience(null);
-      resetForm();
-      fetchExperiences();
-    } catch (error) {
-      console.error('Error saving experience:', error);
-      alert(error.response?.data?.detail || 'Failed to save experience. You may need admin access.');
-    }
+    setDemoActionMessage(
+      editingExperience 
+        ? `Demo only: Changes to "${formData.title}" would be saved here. No real data was modified.`
+        : `Demo only: "${formData.title}" would be created here. No real data was added.`
+    );
+    setShowDemoModal(true);
+    setShowForm(false);
+    setEditingExperience(null);
+    resetForm();
   };
 
   const resetForm = () => {
@@ -251,12 +291,33 @@ const AdminExperiences = () => {
 
   return (
     <div className="min-h-screen bg-[#FAF7F0]">
+      {/* Demo Mode Modal */}
+      <Dialog open={showDemoModal} onOpenChange={setShowDemoModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-serif text-[#8B0000] flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              Demo Mode
+            </DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              <p className="text-[#5C5C5C]">{demoActionMessage}</p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end mt-4">
+            <Button onClick={() => setShowDemoModal(false)}>
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="bg-gradient-to-r from-[#8B0000] to-[#6B0000] text-white py-8 px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-serif font-bold mb-2">Manage Experiences</h1>
             <p className="text-white/90">Create, edit, and manage all cultural experiences</p>
+            <p className="text-white/70 text-sm mt-1">(Demo Mode)</p>
           </div>
           <div className="flex gap-3">
             <Button
@@ -282,6 +343,14 @@ const AdminExperiences = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Demo Mode Notice */}
+        <div className="bg-[#FFF8DC] border border-[#DAA520]/30 text-[#8B4513] px-4 py-3 rounded-md text-sm mb-8 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <strong>Demo Mode:</strong> This page displays sample experiences. Create, edit, and delete operations are simulated and will not persist. All shown data is for demonstration purposes.
+          </div>
+        </div>
+
         {/* Experiences List */}
         <div className="grid grid-cols-1 gap-6">
           {experiences.map((exp) => (
@@ -289,7 +358,7 @@ const AdminExperiences = () => {
               <CardContent className="p-6">
                 <div className="flex gap-6">
                   <img
-                    src={exp.image}
+                    src={exp.image || exp.imageUrl}
                     alt={exp.title}
                     className="w-48 h-32 object-cover rounded-lg"
                   />
@@ -351,6 +420,9 @@ const AdminExperiences = () => {
             <DialogTitle className="text-2xl">
               {editingExperience ? 'Edit Experience' : 'Create New Experience'}
             </DialogTitle>
+            <DialogDescription className="text-sm text-[#DAA520]">
+              Demo Mode: Changes will not be saved permanently
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -498,28 +570,6 @@ const AdminExperiences = () => {
               </div>
             </div>
 
-            {/* Instagram Reels */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#2C2C2C]">Instagram Reels (Optional)</h3>
-              {formData.instagramReels.map((reel, index) => (
-                <div key={index} className="border p-4 rounded-lg space-y-2">
-                  <Label>Reel {index + 1}</Label>
-                  <Input
-                    type="url"
-                    placeholder="Instagram Reel URL"
-                    value={reel.url}
-                    onChange={(e) => handleReelChange(index, 'url', e.target.value)}
-                  />
-                  <Input
-                    type="url"
-                    placeholder="Embed URL (add /embed to reel URL)"
-                    value={reel.embedUrl}
-                    onChange={(e) => handleReelChange(index, 'embedUrl', e.target.value)}
-                  />
-                </div>
-              ))}
-            </div>
-
             {/* Highlights */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -577,482 +627,6 @@ const AdminExperiences = () => {
                     </Button>
                   )}
                 </div>
-              ))}
-            </div>
-
-            {/* Booking Configuration */}
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="text-lg font-semibold text-[#8B0000]">Booking Configuration</h3>
-              
-              {/* Booking Types */}
-              <div>
-                <Label className="mb-3 block">Enable Booking Types</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="private-enabled"
-                      checked={formData.pricing?.private?.enabled}
-                      onCheckedChange={(checked) => setFormData({
-                        ...formData,
-                        pricing: { ...formData.pricing, private: { ...formData.pricing.private, enabled: checked } }
-                      })}
-                    />
-                    <Label htmlFor="private-enabled" className="cursor-pointer">Private Tour</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="shared-enabled"
-                      checked={formData.pricing?.shared?.enabled}
-                      onCheckedChange={(checked) => setFormData({
-                        ...formData,
-                        pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, enabled: checked } }
-                      })}
-                    />
-                    <Label htmlFor="shared-enabled" className="cursor-pointer">Shared Experience</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="group-enabled"
-                      checked={formData.pricing?.group?.enabled}
-                      onCheckedChange={(checked) => setFormData({
-                        ...formData,
-                        pricing: { ...formData.pricing, group: { ...formData.pricing.group, enabled: checked } }
-                      })}
-                    />
-                    <Label htmlFor="group-enabled" className="cursor-pointer">Group Booking</Label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Private Pricing */}
-              {formData.pricing?.private?.enabled && (
-                <Card className="bg-gray-50">
-                  <CardContent className="p-4 space-y-3">
-                    <h4 className="font-semibold text-[#2C2C2C]">Private Tour Pricing</h4>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <Label>First Adult (₹)</Label>
-                        <Input
-                          type="number"
-                          value={formData.pricing.private.firstAdult}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, firstAdult: parseInt(e.target.value) } }
-                          })}
-                        />
-                      </div>
-                      <div>
-                        <Label>Additional Adult (₹)</Label>
-                        <Input
-                          type="number"
-                          value={formData.pricing.private.additionalAdult}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, additionalAdult: parseInt(e.target.value) } }
-                          })}
-                        />
-                      </div>
-                      <div>
-                        <Label>Child (₹)</Label>
-                        <Input
-                          type="number"
-                          value={formData.pricing.private.child}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricing: { ...formData.pricing, private: { ...formData.pricing.private, child: parseInt(e.target.value) } }
-                          })}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Shared Pricing */}
-              {formData.pricing?.shared?.enabled && (
-                <Card className="bg-gray-50">
-                  <CardContent className="p-4 space-y-3">
-                    <h4 className="font-semibold text-[#2C2C2C]">Shared Experience Pricing</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label>Adult (₹)</Label>
-                        <Input
-                          type="number"
-                          value={formData.pricing.shared.adult}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, adult: parseInt(e.target.value) } }
-                          })}
-                        />
-                      </div>
-                      <div>
-                        <Label>Child (₹)</Label>
-                        <Input
-                          type="number"
-                          value={formData.pricing.shared.child}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricing: { ...formData.pricing, shared: { ...formData.pricing.shared, child: parseInt(e.target.value) } }
-                          })}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Group Pricing */}
-              {formData.pricing?.group?.enabled && (
-                <Card className="bg-gray-50">
-                  <CardContent className="p-4 space-y-3">
-                    <h4 className="font-semibold text-[#2C2C2C]">Group Booking Pricing</h4>
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <Label>Tier 1 Min</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier1.min}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, min: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label>Tier 1 Max</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier1.max}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, max: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label>Price/Person (₹)</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier1.pricePerPerson}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier1: { ...formData.pricing.group.tier1, pricePerPerson: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <Label>Tier 2 Min</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier2.min}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, min: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label>Tier 2 Max</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier2.max}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, max: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label>Price/Person (₹)</Label>
-                          <Input
-                            type="number"
-                            value={formData.pricing.group.tier2.pricePerPerson}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricing: { ...formData.pricing, group: { ...formData.pricing.group, tier2: { ...formData.pricing.group.tier2, pricePerPerson: parseInt(e.target.value) } } }
-                            })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Add-ons Management */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Add-ons</Label>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setFormData({
-                      ...formData,
-                      addOns: [...formData.addOns, {
-                        id: `addon-${Date.now()}`,
-                        name: '',
-                        description: '',
-                        price: 0,
-                        calculationType: 'flat',
-                        active: true
-                      }]
-                    })}
-                  >
-                    <Plus className="w-4 h-4 mr-1" /> Add New Add-on
-                  </Button>
-                </div>
-                {formData.addOns.map((addon, index) => (
-                  <Card key={addon.id} className="bg-gray-50">
-                    <CardContent className="p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            checked={addon.active}
-                            onCheckedChange={(checked) => {
-                              const newAddOns = [...formData.addOns];
-                              newAddOns[index].active = checked;
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          />
-                          <Label>Active</Label>
-                        </div>
-                        {formData.addOns.length > 1 && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              const newAddOns = formData.addOns.filter((_, i) => i !== index);
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Add-on Name</Label>
-                          <Input
-                            value={addon.name}
-                            onChange={(e) => {
-                              const newAddOns = [...formData.addOns];
-                              newAddOns[index].name = e.target.value;
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <Label>Price (₹)</Label>
-                          <Input
-                            type="number"
-                            value={addon.price}
-                            onChange={(e) => {
-                              const newAddOns = [...formData.addOns];
-                              newAddOns[index].price = parseInt(e.target.value);
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Calculation Type</Label>
-                          <Select
-                            value={addon.calculationType}
-                            onValueChange={(value) => {
-                              const newAddOns = [...formData.addOns];
-                              newAddOns[index].calculationType = value;
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="flat">Flat Price</SelectItem>
-                              <SelectItem value="per_person">Per Person</SelectItem>
-                              <SelectItem value="per_adult">Per Adult</SelectItem>
-                              <SelectItem value="per_3_guests">Per 3 Guests</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Description</Label>
-                          <Input
-                            value={addon.description}
-                            placeholder="Optional"
-                            onChange={(e) => {
-                              const newAddOns = [...formData.addOns];
-                              newAddOns[index].description = e.target.value;
-                              setFormData({ ...formData, addOns: newAddOns });
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Availability Calendar */}
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="text-lg font-semibold text-[#8B0000]">Availability Calendar & Time Slots</h3>
-              
-              <div className="flex items-center justify-between">
-                <Label>Available Dates</Label>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => setFormData({
-                    ...formData,
-                    availability: [...formData.availability, {
-                      date: '',
-                      timeSlots: []
-                    }]
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-1" /> Add Date
-                </Button>
-              </div>
-
-              {formData.availability.map((day, dayIndex) => (
-                <Card key={dayIndex} className="bg-gray-50">
-                  <CardContent className="p-4 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 mr-4">
-                        <Label>Date</Label>
-                        <Input
-                          type="date"
-                          value={day.date}
-                          min={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => {
-                            const newAvailability = [...formData.availability];
-                            newAvailability[dayIndex].date = e.target.value;
-                            setFormData({ ...formData, availability: newAvailability });
-                          }}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={() => {
-                            const newAvailability = [...formData.availability];
-                            newAvailability[dayIndex].timeSlots.push({
-                              time: '',
-                              bookingType: 'private',
-                              maxCapacity: 1,
-                              currentBookings: 0,
-                              available: true
-                            });
-                            setFormData({ ...formData, availability: newAvailability });
-                          }}
-                        >
-                          <Plus className="w-4 h-4 mr-1" /> Add Time Slot
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            const newAvailability = formData.availability.filter((_, i) => i !== dayIndex);
-                            setFormData({ ...formData, availability: newAvailability });
-                          }}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Time Slots */}
-                    {day.timeSlots.length > 0 && (
-                      <div className="space-y-2 border-t pt-3">
-                        <Label className="text-sm font-semibold">Time Slots</Label>
-                        {day.timeSlots.map((slot, slotIndex) => (
-                          <div key={slotIndex} className="grid grid-cols-5 gap-2 items-end bg-white p-3 rounded">
-                            <div>
-                              <Label className="text-xs">Time</Label>
-                              <Input
-                                type="time"
-                                value={slot.time}
-                                onChange={(e) => {
-                                  const newAvailability = [...formData.availability];
-                                  newAvailability[dayIndex].timeSlots[slotIndex].time = e.target.value;
-                                  setFormData({ ...formData, availability: newAvailability });
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs">Booking Type</Label>
-                              <Select
-                                value={slot.bookingType}
-                                onValueChange={(value) => {
-                                  const newAvailability = [...formData.availability];
-                                  newAvailability[dayIndex].timeSlots[slotIndex].bookingType = value;
-                                  setFormData({ ...formData, availability: newAvailability });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {formData.pricing.private.enabled && (
-                                    <SelectItem value="private">Private</SelectItem>
-                                  )}
-                                  {formData.pricing.shared.enabled && (
-                                    <SelectItem value="shared">Shared</SelectItem>
-                                  )}
-                                  {formData.pricing.group.enabled && (
-                                    <SelectItem value="group">Group</SelectItem>
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label className="text-xs">Max Capacity</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={slot.maxCapacity}
-                                onChange={(e) => {
-                                  const newAvailability = [...formData.availability];
-                                  newAvailability[dayIndex].timeSlots[slotIndex].maxCapacity = parseInt(e.target.value) || 1;
-                                  setFormData({ ...formData, availability: newAvailability });
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs">Current Bookings</Label>
-                              <Input
-                                type="number"
-                                value={slot.currentBookings || 0}
-                                disabled
-                                className="bg-gray-100"
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                const newAvailability = [...formData.availability];
-                                newAvailability[dayIndex].timeSlots = newAvailability[dayIndex].timeSlots.filter((_, i) => i !== slotIndex);
-                                setFormData({ ...formData, availability: newAvailability });
-                              }}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               ))}
             </div>
 

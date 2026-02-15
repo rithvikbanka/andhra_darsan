@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Award, MapPin, Clock } from 'lucide-react';
+import { ArrowRight, Users, Award, MapPin, Clock, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { experienceAPI } from '../services/api';
-import { testimonials } from '../mock';
+// TODO: Re-enable when hooking to backend
+// import { experienceAPI } from '../services/api';
+// import { testimonials } from '../mock';
+
+// Demo mode: Using static data instead of API calls
+import { DEMO_EXPERIENCES, DEMO_TESTIMONIALS } from '../demoData';
 
 const Home = () => {
   const [stats, setStats] = useState({ experiences: 0, guests: 0, facilitators: 0, cities: 0 });
@@ -40,16 +44,28 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchExperiences = async () => {
-    try {
-      const data = await experienceAPI.getAll();
-      const featured = data.filter((exp) => exp.featured);
-      setFeaturedExperiences(featured);
+  // TODO: Re-enable when hooking to backend
+  // const fetchExperiences = async () => {
+  //   try {
+  //     const data = await experienceAPI.getAll();
+  //     const featured = data.filter((exp) => exp.featured);
+  //     setFeaturedExperiences(featured);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching experiences:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Load featured experiences from static data
+  const fetchExperiences = () => {
+    // Simulate loading delay for realistic feel
+    setTimeout(() => {
+      // Get experiences marked as featured, or take first 6 if none are marked
+      const featured = DEMO_EXPERIENCES.filter((exp) => exp.featured);
+      setFeaturedExperiences(featured.length > 0 ? featured.slice(0, 6) : DEMO_EXPERIENCES.slice(0, 6));
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching experiences:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   return (
@@ -59,7 +75,7 @@ const Home = () => {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1566915682737-3e97a7eed93b"
+            src="https://images.unsplash.com/photo-1714682120648-1811a1d52afb"
             alt="Andhra Temple"
             className="w-full h-full object-cover"
           />
@@ -136,7 +152,7 @@ const Home = () => {
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={exp.image}
+                    src={exp.image || exp.imageUrl}
                     alt={exp.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -144,6 +160,10 @@ const Home = () => {
                     <span className="bg-[#8B0000] text-white text-xs px-3 py-1 rounded-full">
                       {exp.category}
                     </span>
+                  </div>
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-[#DAA520] text-[#DAA520]" />
+                    <span className="text-xs font-semibold">{exp.rating}</span>
                   </div>
                 </div>
                 <CardContent className="p-6">
@@ -160,7 +180,7 @@ const Home = () => {
                       <span>{exp.duration}</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div>
                       <span className="text-2xl font-bold text-[#8B0000]">₹{exp.price}</span>
                       <span className="text-sm text-[#5C5C5C]"> / person</span>
@@ -183,8 +203,7 @@ const Home = () => {
             <Link to="/experiences">
               <Button
                 size="lg"
-                variant="outline"
-                className="border-[#8B0000] text-[#8B0000] hover:bg-[#8B0000] hover:text-white"
+                className="bg-[#8B0000] hover:bg-[#6B0000] text-white px-8"
               >
                 View All Experiences
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -258,7 +277,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section - Using DEMO_TESTIMONIALS */}
       <section className="py-20 px-6 bg-[#2C2C2C] text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -271,7 +290,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((testimonial) => (
+            {DEMO_TESTIMONIALS.map((testimonial) => (
               <Card key={testimonial.id} className="bg-white/5 backdrop-blur-sm border-white/10">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">

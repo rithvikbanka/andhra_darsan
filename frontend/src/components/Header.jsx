@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+// Demo mode: hiding Login until auth backend is ready - User icon commented
+// import { User } from 'lucide-react';
 import { Button } from './ui/button';
+import logoFull from '../assets/logo-full.png';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -21,9 +24,15 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="text-2xl font-serif font-bold text-[#8B0000]">
+            <img
+              src={logoFull}
+              alt="Andhra Darsan"
+              className="h-8 w-auto md:h-9"
+            />
+            {/* Previous text logo kept for fallback: Andhra Darsan */}
+            {/* <div className="text-2xl font-serif font-bold text-[#8B0000]">
               Andhra Darsan
-            </div>
+            </div> */}
           </Link>
 
           {/* Desktop Navigation */}
@@ -43,12 +52,13 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Link to="/login">
+            {/* Demo mode: hiding Login until auth backend is ready */}
+            {/* <Link to="/login">
               <Button variant="ghost" size="sm" className="gap-2">
                 <User className="w-4 h-4" />
                 Login
               </Button>
-            </Link>
+            </Link> */}
             <Link to="/experiences">
               <Button
                 size="sm"
@@ -88,12 +98,13 @@ const Header = () => {
                   {link.name}
                 </Link>
               ))}
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+              {/* Demo mode: hiding Login until auth backend is ready */}
+              {/* <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full gap-2">
                   <User className="w-4 h-4" />
                   Login
                 </Button>
-              </Link>
+              </Link> */}
               <Link to="/experiences" onClick={() => setMobileMenuOpen(false)}>
                 <Button
                   size="sm"

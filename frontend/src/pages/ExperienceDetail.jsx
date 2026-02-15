@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Label } from '../components/ui/label';
@@ -13,8 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { experienceAPI, bookingAPI } from '../services/api';
-import { testimonials } from '../mock';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../components/ui/dialog';
+// TODO: Re-enable when hooking to backend
+// import { experienceAPI, bookingAPI } from '../services/api';
+// import { testimonials } from '../mock';
+
+// Demo mode: Using static data instead of API calls
+import { DEMO_EXPERIENCES, DEMO_TESTIMONIALS } from '../demoData';
 
 const ExperienceDetail = () => {
   const { id } = useParams();
@@ -22,6 +33,9 @@ const ExperienceDetail = () => {
   const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Demo mode: Coming Soon modal state
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
 
   const [bookingType, setBookingType] = useState('private');
   const [adults, setAdults] = useState(1);
@@ -63,15 +77,26 @@ const ExperienceDetail = () => {
     return () => clearInterval(interval);
   }, [experience]);
 
-  const fetchExperience = async () => {
-    try {
-      const data = await experienceAPI.getById(parseInt(id));
-      setExperience(data);
+  // TODO: Re-enable when hooking to backend
+  // const fetchExperience = async () => {
+  //   try {
+  //     const data = await experienceAPI.getById(parseInt(id));
+  //     setExperience(data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching experience:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Find experience from static data
+  const fetchExperience = () => {
+    // Simulate loading delay for realistic feel
+    setTimeout(() => {
+      const foundExperience = DEMO_EXPERIENCES.find(exp => exp.id === parseInt(id));
+      setExperience(foundExperience || null);
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching experience:', error);
-      setLoading(false);
-    }
+    }, 300);
   };
 
   const handlePrevImage = () => {
@@ -192,53 +217,104 @@ const ExperienceDetail = () => {
   const availableDates = getAvailableDates();
   const availableTimeSlots = getAvailableTimeSlots();
 
-  const handleBooking = async () => {
-    if (!selectedDate || !selectedTime) {
-      alert('Please select date and time');
-      return;
-    }
-    if (!customerDetails.name || !customerDetails.email || !customerDetails.phone) {
-      alert('Please fill in all customer details');
-      return;
-    }
-    
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Please login to make a booking');
-      navigate('/login');
-      return;
-    }
+  // TODO: Re-enable when hooking to backend
+  // const handleBooking = async () => {
+  //   if (!selectedDate || !selectedTime) {
+  //     alert('Please select date and time');
+  //     return;
+  //   }
+  //   if (!customerDetails.name || !customerDetails.email || !customerDetails.phone) {
+  //     alert('Please fill in all customer details');
+  //     return;
+  //   }
+  //   
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     alert('Please login to make a booking');
+  //     navigate('/login');
+  //     return;
+  //   }
+  //
+  //   try {
+  //     const bookingData = {
+  //       experience_id: experience.id,
+  //       experience_title: experience.title,
+  //       booking_type: bookingType,
+  //       date: selectedDate,
+  //       time: selectedTime,
+  //       guests: { adults, kids },
+  //       group_size: bookingType === 'group' ? groupSize : null,
+  //       add_ons: addOns,
+  //       customer_name: customerDetails.name,
+  //       customer_email: customerDetails.email,
+  //       customer_phone: customerDetails.phone,
+  //       total_price: pricing.total
+  //     };
+  //
+  //     const response = await bookingAPI.create(bookingData);
+  //     
+  //     alert(
+  //       `Booking Confirmed!\n\nBooking ID: ${response.id}\nExperience: ${experience.title}\nDate: ${selectedDate}\nTime: ${selectedTime}\nTotal: ₹${pricing.total.toFixed(2)}\n\nConfirmation sent to ${customerDetails.email}`
+  //     );
+  //     navigate('/dashboard');
+  //   } catch (error) {
+  //     console.error('Booking error:', error);
+  //     alert(error.response?.data?.detail || 'Failed to create booking. Please try again.');
+  //   }
+  // };
 
-    try {
-      const bookingData = {
-        experience_id: experience.id,
-        experience_title: experience.title,
-        booking_type: bookingType,
-        date: selectedDate,
-        time: selectedTime,
-        guests: { adults, kids },
-        group_size: bookingType === 'group' ? groupSize : null,
-        add_ons: addOns,
-        customer_name: customerDetails.name,
-        customer_email: customerDetails.email,
-        customer_phone: customerDetails.phone,
-        total_price: pricing.total
-      };
-
-      const response = await bookingAPI.create(bookingData);
-      
-      alert(
-        `Booking Confirmed!\n\nBooking ID: ${response.id}\nExperience: ${experience.title}\nDate: ${selectedDate}\nTime: ${selectedTime}\nTotal: ₹${pricing.total.toFixed(2)}\n\nConfirmation sent to ${customerDetails.email}`
-      );
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Booking error:', error);
-      alert(error.response?.data?.detail || 'Failed to create booking. Please try again.');
-    }
+  // Demo mode: Show coming soon modal instead of real booking
+  const handleBooking = () => {
+    setShowComingSoonModal(true);
   };
 
   return (
     <div className="bg-[#FAF7F0] min-h-screen pb-12">
+      {/* Demo Mode: Coming Soon Modal */}
+      <Dialog open={showComingSoonModal} onOpenChange={setShowComingSoonModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-serif text-[#8B0000]">Coming Soon!</DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              <div className="space-y-4">
+                <p className="text-[#5C5C5C]">
+                  Online booking is coming soon. For now, this is a <strong>demo experience</strong>.
+                </p>
+                <div className="bg-[#FFF8DC] p-4 rounded-lg border border-[#DAA520]/30">
+                  <p className="text-sm text-[#8B4513]">
+                    <strong>Want to book this experience?</strong><br/>
+                    Contact us directly via WhatsApp or email to make a reservation.
+                  </p>
+                </div>
+                <div className="pt-2">
+                  <p className="text-sm text-[#5C5C5C]">
+                    📞 WhatsApp: +91 98765 43210<br/>
+                    ✉️ Email: bookings@andhradarsan.com
+                  </p>
+                </div>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowComingSoonModal(false)}
+            >
+              Close
+            </Button>
+            <Button
+              className="bg-[#8B0000] hover:bg-[#6B0000] text-white"
+              onClick={() => {
+                window.open('https://wa.me/919876543210', '_blank');
+                setShowComingSoonModal(false);
+              }}
+            >
+              Contact via WhatsApp
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Image Carousel */}
       <div className="relative h-[60vh] bg-black overflow-hidden">
         {/* Carousel Images */}
@@ -406,14 +482,14 @@ const ExperienceDetail = () => {
               </Card>
             )}
 
-            {/* Reviews */}
+            {/* Reviews - Using Demo Testimonials */}
             <Card className="border-0 shadow-md">
               <CardContent className="p-8">
                 <h2 className="text-2xl font-serif font-bold text-[#2C2C2C] mb-6">
                   Traveler Reviews
                 </h2>
                 <div className="space-y-6">
-                  {testimonials.slice(0, 2).map((testimonial) => (
+                  {DEMO_TESTIMONIALS.slice(0, 2).map((testimonial) => (
                     <div key={testimonial.id} className="border-b border-gray-200 pb-6 last:border-0">
                       <div className="flex items-center gap-3 mb-3">
                         <img
