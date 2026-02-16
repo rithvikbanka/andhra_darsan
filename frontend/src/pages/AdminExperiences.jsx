@@ -212,9 +212,9 @@ const AdminExperiences = () => {
         : `Demo only: "${formData.title}" would be created here. No real data was added.`
     );
     setShowDemoModal(true);
-    setShowForm(false);
-    setEditingExperience(null);
-    resetForm();
+      setShowForm(false);
+      setEditingExperience(null);
+      resetForm();
   };
 
   const resetForm = () => {

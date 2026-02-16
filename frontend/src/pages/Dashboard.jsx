@@ -34,7 +34,7 @@ const Dashboard = () => {
       localStorage.setItem('token', 'demo-token-12345');
       setUser(DEMO_USER);
     } else {
-      setUser(JSON.parse(userData));
+    setUser(JSON.parse(userData));
     }
     fetchBookings();
   }, []);

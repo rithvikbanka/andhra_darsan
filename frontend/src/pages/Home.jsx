@@ -71,7 +71,7 @@ const Home = () => {
   return (
     <div className="bg-[#FAF7F0]">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-4 sm:pt-8 md:pt-0">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
@@ -83,11 +83,11 @@ const Home = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 text-center px-6 max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight">
+        <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl py-8 sm:py-12 md:py-0">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-white mb-4 sm:mb-6 leading-tight">
             Experience Andhra.<br />Become Andhra.
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-8 font-light">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 sm:mb-8 font-light">
             Curated cultural journeys, sacred rituals, crafts, and stories of Andhra Pradesh.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
