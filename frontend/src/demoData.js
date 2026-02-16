@@ -6,6 +6,7 @@
 export const DEMO_EXPERIENCES = [
   {
     id: 1,
+    slug: "handloom-heritage-mangalagiri",
     title: "Handloom Heritage – Mangalagiri",
     category: "Handlooms & Handicrafts",
     location: "Amaravati – Vijayawada",
@@ -57,6 +58,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 2,
+    slug: "culinary-andhra-amaravati",
     title: "Culinary Andhra – Amaravati",
     category: "Culinary",
     location: "Amaravati – Vijayawada",
@@ -106,6 +108,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 3,
+    slug: "rk-beach-cultural-walk-vizag",
     title: "RK Beach Cultural Walk – Vizag",
     category: "Heritage",
     location: "Vizag",
@@ -153,6 +156,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 4,
+    slug: "tirupati-city-cultural-tour",
     title: "Tirupati City Cultural Tour",
     category: "Temples & Spirituality",
     location: "Tirupati",
@@ -204,6 +208,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 5,
+    slug: "kondapalli-toys-experience",
     title: "Kondapalli Toys Experience",
     category: "Handlooms & Handicrafts",
     location: "Amaravati – Vijayawada",
@@ -253,6 +258,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 6,
+    slug: "kondapalli-fort-visit",
     title: "Kondapalli Fort Visit",
     category: "Heritage",
     location: "Amaravati – Vijayawada",
@@ -300,6 +306,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 7,
+    slug: "krishna-yaan",
     title: "Krishna Yaan",
     category: "Nature",
     location: "Amaravati – Vijayawada",
@@ -347,6 +354,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 8,
+    slug: "buddhist-stupa-visit",
     title: "Buddhist Stupa Visit",
     category: "Heritage",
     location: "Amaravati – Vijayawada",
@@ -395,6 +403,7 @@ export const DEMO_EXPERIENCES = [
   },
   {
     id: 9,
+    slug: "lakshmi-narasimha-temple-experience",
     title: "Lakshmi Narasimha Temple Experience",
     category: "Temples & Spirituality",
     location: "Mangalagiri – Guntur District",

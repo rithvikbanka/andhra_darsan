@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, Users, Award, MapPin, Clock, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 // TODO: Re-enable when hooking to backend
 // import { experienceAPI } from '../services/api';
-// import { testimonials } from '../mock';
 
-// Demo mode: Using static data instead of API calls
-import { DEMO_EXPERIENCES, DEMO_TESTIMONIALS } from '../demoData';
+// Demo mode: Using localStorage data
+import { getExperiences } from '../utils/localStorage';
+import { DEMO_TESTIMONIALS } from '../demoData';
 
 const Home = () => {
+  const location = useLocation();
   const [stats, setStats] = useState({ experiences: 0, guests: 0, facilitators: 0, cities: 0 });
   const [featuredExperiences, setFeaturedExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Handle smooth scroll from footer links
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      setTimeout(() => {
+        const element = document.getElementById(location.state.scrollTo);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [location]);
 
   // Animate stats on mount
   useEffect(() => {
@@ -57,13 +70,17 @@ const Home = () => {
   //   }
   // };
 
-  // Demo mode: Load featured experiences from static data
+  // Demo mode: Load featured experiences from localStorage
   const fetchExperiences = () => {
     // Simulate loading delay for realistic feel
     setTimeout(() => {
+      const allExperiences = getExperiences();
       // Get experiences marked as featured, or take first 6 if none are marked
-      const featured = DEMO_EXPERIENCES.filter((exp) => exp.featured);
-      setFeaturedExperiences(featured.length > 0 ? featured.slice(0, 6) : DEMO_EXPERIENCES.slice(0, 6));
+      const featured = allExperiences.filter((exp) => exp.featured);
+      setFeaturedExperiences(featured.length > 0 ? featured.slice(0, 6) : allExperiences.slice(0, 6));
+      
+      // Update stats with actual count
+      setStats(prev => ({ ...prev, experiences: allExperiences.length }));
       setLoading(false);
     }, 300);
   };
@@ -185,7 +202,7 @@ const Home = () => {
                       <span className="text-2xl font-bold text-[#8B0000]">₹{exp.price}</span>
                       <span className="text-sm text-[#5C5C5C]"> / person</span>
                     </div>
-                    <Link to={`/experience/${exp.id}`}>
+                    <Link to={`/experience/${exp.slug}`}>
                       <Button
                         size="sm"
                         className="bg-[#DAA520] hover:bg-[#B8860B] text-[#2C2C2C]"
@@ -214,7 +231,7 @@ const Home = () => {
       </section>
 
       {/* Why Andhra Darsan Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-[#FAF7F0] to-white">
+      <section id="about" className="py-20 px-6 bg-gradient-to-b from-[#FAF7F0] to-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#2C2C2C] mb-4">

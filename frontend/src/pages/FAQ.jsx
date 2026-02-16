@@ -62,14 +62,14 @@ const FAQ = () => {
               Our experience curators are here to help you plan the perfect cultural journey
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="tel:+919876543210">
+              <a href="tel:+919491204654">
                 <button className="px-6 py-3 bg-[#8B0000] hover:bg-[#6B0000] text-white rounded-md transition-colors">
                   Call Us: +91 98765 43210
                 </button>
               </a>
-              <a href="mailto:hello@andhradarsan.com">
+              <a href="mailto:vyshnavikorlakunta@gmail.com">
                 <button className="px-6 py-3 border-2 border-[#8B0000] text-[#8B0000] hover:bg-[#8B0000] hover:text-white rounded-md transition-colors">
-                  Email: hello@andhradarsan.com
+                  Email: vyshnavikorlakunta@gmail.com
                 </button>
               </a>
             </div>

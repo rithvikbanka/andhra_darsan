@@ -24,11 +24,12 @@ import {
 // import { experienceAPI, bookingAPI } from '../services/api';
 // import { testimonials } from '../mock';
 
-// Demo mode: Using static data instead of API calls
-import { DEMO_EXPERIENCES, DEMO_TESTIMONIALS } from '../demoData';
+// Demo mode: Using static data from localStorage
+import { DEMO_TESTIMONIALS } from '../demoData';
+import { getExperienceBySlug } from '../utils/localStorage';
 
 const ExperienceDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,7 @@ const ExperienceDetail = () => {
 
   useEffect(() => {
     fetchExperience();
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     setAddOns(prev => ({ ...prev, souvenirKits: adults }));
@@ -80,7 +81,7 @@ const ExperienceDetail = () => {
   // TODO: Re-enable when hooking to backend
   // const fetchExperience = async () => {
   //   try {
-  //     const data = await experienceAPI.getById(parseInt(id));
+  //     const data = await experienceAPI.getBySlug(slug);
   //     setExperience(data);
   //     setLoading(false);
   //   } catch (error) {
@@ -89,11 +90,11 @@ const ExperienceDetail = () => {
   //   }
   // };
 
-  // Demo mode: Find experience from static data
+  // Demo mode: Find experience from localStorage by slug
   const fetchExperience = () => {
     // Simulate loading delay for realistic feel
     setTimeout(() => {
-      const foundExperience = DEMO_EXPERIENCES.find(exp => exp.id === parseInt(id));
+      const foundExperience = getExperienceBySlug(slug);
       setExperience(foundExperience || null);
       setLoading(false);
     }, 300);
@@ -305,7 +306,7 @@ const ExperienceDetail = () => {
             <Button
               className="bg-[#8B0000] hover:bg-[#6B0000] text-white"
               onClick={() => {
-                window.open('https://wa.me/919876543210', '_blank');
+                window.open('https://wa.me/919491204654', '_blank');
                 setShowComingSoonModal(false);
               }}
             >
@@ -457,26 +458,42 @@ const ExperienceDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Instagram Reels Section */}
-            {experience.instagramReels && experience.instagramReels.length > 0 && (
+            {/* Instagram Reels Section - See This Experience in Action */}
+            {experience.instagramReels && experience.instagramReels.length > 0 && 
+             experience.instagramReels.filter(reel => reel && reel.trim()).length > 0 && (
               <Card className="border-0 shadow-md">
                 <CardContent className="p-8">
-                  <h2 className="text-2xl font-serif font-bold text-[#2C2C2C] mb-6">
+                  <h2 className="text-2xl font-serif font-bold text-[#2C2C2C] mb-2">
                     See This Experience in Action
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {experience.instagramReels.map((reel, index) => (
-                      <div key={index} className="relative aspect-[9/16] rounded-lg overflow-hidden bg-black">
-                        <iframe
-                          src={reel.embedUrl}
-                          className="absolute inset-0 w-full h-full"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title={`Instagram Reel ${index + 1}`}
-                        />
-                      </div>
-                    ))}
+                  <p className="text-[#5C5C5C] mb-6">
+                    Watch authentic moments from this cultural journey
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 overflow-x-auto">
+                    {experience.instagramReels
+                      .filter(reel => reel && reel.trim())
+                      .map((reelUrl, index) => {
+                        // Convert Instagram reel URL to embed format
+                        const embedUrl = reelUrl.includes('/embed') 
+                          ? reelUrl 
+                          : `${reelUrl.replace(/\/$/, '')}/embed`;
+                        
+                        return (
+                          <div key={index} className="flex-shrink-0 w-full">
+                            <div className="relative rounded-lg overflow-hidden shadow-md" style={{ height: '500px' }}>
+                              <iframe
+                                src={embedUrl}
+                                className="w-full h-full"
+                                frameBorder="0"
+                                scrolling="no"
+                                allowTransparency="true"
+                                allow="encrypted-media"
+                                title={`Instagram Reel ${index + 1}`}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
                 </CardContent>
               </Card>

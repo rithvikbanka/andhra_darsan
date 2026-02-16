@@ -9,8 +9,8 @@ import { Slider } from '../components/ui/slider';
 // TODO: Re-enable when hooking to backend
 // import { experienceAPI } from '../services/api';
 
-// Demo mode: Using static data instead of API calls
-import { DEMO_EXPERIENCES } from '../demoData';
+// Demo mode: Using localStorage data
+import { getExperiences } from '../utils/localStorage';
 
 const Experiences = () => {
   const [searchParams] = useSearchParams();
@@ -43,11 +43,12 @@ const Experiences = () => {
   //   }
   // };
 
-  // Demo mode: Load static data instead of API call
+  // Demo mode: Load data from localStorage
   const fetchExperiences = () => {
     // Simulate loading delay for realistic feel
     setTimeout(() => {
-      setExperiences(DEMO_EXPERIENCES);
+      const data = getExperiences();
+      setExperiences(data);
       setLoading(false);
     }, 300);
   };
@@ -333,7 +334,7 @@ const Experiences = () => {
                           <span className="text-2xl font-bold text-[#8B0000]">₹{exp.price}</span>
                           <span className="text-sm text-[#5C5C5C]"> / person</span>
                         </div>
-                        <Link to={`/experience/${exp.id}`}>
+                        <Link to={`/experience/${exp.slug}`}>
                           <Button
                             size="sm"
                             className="bg-[#DAA520] hover:bg-[#B8860B] text-[#2C2C2C]"
