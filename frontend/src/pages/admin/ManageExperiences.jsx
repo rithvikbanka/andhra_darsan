@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Pencil, Trash2, MapPin, Clock, Star, Search } from 'lucide-react';
 import { Button } from '../../components/ui/button';
@@ -42,14 +42,14 @@ const ManageExperiences = () => {
 
   useEffect(() => {
     filterExperiences();
-  }, [experiences, searchQuery, selectedCategory]);
+  }, [filterExperiences]);
 
   const loadExperiences = () => {
     const data = getExperiences();
     setExperiences(data);
   };
 
-  const filterExperiences = () => {
+  const filterExperiences = useCallback(() => {
     let filtered = [...experiences];
 
     // Apply search filter
@@ -69,7 +69,7 @@ const ManageExperiences = () => {
     }
 
     setFilteredExperiences(filtered);
-  };
+  }, [experiences, searchQuery, selectedCategory]);
 
   // Debounced search handler
   const debouncedSearch = useMemo(

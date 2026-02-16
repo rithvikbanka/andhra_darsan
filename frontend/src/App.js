@@ -15,6 +15,7 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ManageExperiences = lazy(() => import('./pages/admin/ManageExperiences'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Lazy load layout components
 const Header = lazy(() => import('./components/Header'));
@@ -58,6 +59,9 @@ function AppContent() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/experiences" element={<ManageExperiences />} />
+        
+        {/* 404 Fallback - Must be last */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       <WhatsAppButton />

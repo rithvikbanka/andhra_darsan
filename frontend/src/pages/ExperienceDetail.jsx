@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Star, Check, Users, Calendar, Plus, Minus, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -59,7 +59,7 @@ const ExperienceDetail = () => {
 
   useEffect(() => {
     fetchExperience();
-  }, [slug]);
+  }, [fetchExperience]);
 
   useEffect(() => {
     setAddOns(prev => ({ ...prev, souvenirKits: adults }));
@@ -91,14 +91,14 @@ const ExperienceDetail = () => {
   // };
 
   // Demo mode: Find experience from localStorage by slug
-  const fetchExperience = () => {
+  const fetchExperience = useCallback(() => {
     // Simulate loading delay for realistic feel
     setTimeout(() => {
       const foundExperience = getExperienceBySlug(slug);
       setExperience(foundExperience || null);
       setLoading(false);
     }, 300);
-  };
+  }, [slug]);
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prevIndex) => 
