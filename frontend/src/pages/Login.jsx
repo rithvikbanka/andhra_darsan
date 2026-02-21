@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logoFull from '../assets/logo-full.png';
 
 /* ─── Old demo-mode fake login (preserved for reference) ───
 import { DEMO_USER } from '../demoData';
@@ -32,6 +33,7 @@ const Login = () => {
 
   const [mode, setMode] = useState('signin');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -51,6 +53,13 @@ const Login = () => {
       navigate(redirect || '/', { replace: true });
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (user !== undefined) {
+      setLoading(false);
+      setGoogleLoading(false);
+    }
+  }, [user]);
 
   const clearState = () => {
     setError('');
@@ -114,7 +123,7 @@ const Login = () => {
   const handleForgot = async (e) => {
     e.preventDefault();
     clearState();
-    if (!email.trim()) { setFieldErrors({ email: 'Email is required' }); return; }
+    if (!email.trim()) { setFieldErrors({ email: 'Please enter your email address' }); return; }
     setLoading(true);
     try {
       await resetPassword(email);
@@ -128,12 +137,12 @@ const Login = () => {
 
   const handleGoogle = async () => {
     clearState();
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       await signInWithGoogle();
     } catch (err) {
       setError(err.message || 'Google sign-in failed');
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -186,11 +195,11 @@ const Login = () => {
     <button
       type="button"
       onClick={handleGoogle}
-      disabled={loading}
+      disabled={googleLoading}
       className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
     >
-      <GoogleIcon />
-      Continue with Google
+      {googleLoading ? <Spinner /> : <GoogleIcon />}
+      {googleLoading ? 'Redirecting...' : 'Continue with Google'}
     </button>
   );
 
@@ -206,9 +215,9 @@ const Login = () => {
           {success ? (
             <div className="text-center py-8">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset link sent!</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
               <p className="text-gray-600 text-sm mb-6">
-                Check your inbox at <strong>{success}</strong>. The link expires in 1 hour.
+                If <strong>{success}</strong> is registered, you'll receive a reset link shortly. The link expires in 1 hour.
               </p>
               <button onClick={() => { setSuccess(''); }} className="text-sm text-gray-500 hover:text-[#8B0000] underline">
                 Resend email
@@ -261,9 +270,15 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        {/* Logo */}
+        {/* Logo with text fallback */}
         <Link to="/" className="block text-center mb-6">
-          <span className="text-2xl font-serif font-bold text-[#8B0000]">Andhra Darsan</span>
+          <img
+            src={logoFull}
+            alt="Andhra Darsan"
+            className="h-16 mx-auto"
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }}
+          />
+          <span className="text-2xl font-serif font-bold text-[#8B0000]" style={{ display: 'none' }}>Andhra Darsan</span>
         </Link>
 
         {/* Tabs */}
