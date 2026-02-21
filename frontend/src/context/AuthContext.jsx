@@ -1,18 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
-const ADMIN_EMAILS = [
-  'vaishnavikorlakunta@gmail.com',
-  'andhradarsan@gmail.com',
-];
+const ADMIN_EMAILS = ['hello@andhradarsan.com'];
 
-const AuthContext = createContext(null);
+const AuthContext = createContext({});
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
-  return ctx;
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -20,45 +13,91 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const checkAdmin = (u) =>
+    setIsAdmin(u?.email ? ADMIN_EMAILS.includes(u.email.toLowerCase()) : false);
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsAdmin(
-        currentSession?.user?.email
-          ? ADMIN_EMAILS.includes(currentSession.user.email.toLowerCase())
-          : false
-      );
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+      checkAdmin(s?.user);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        setIsAdmin(
-          newSession?.user?.email
-            ? ADMIN_EMAILS.includes(newSession.user.email.toLowerCase())
-            : false
-        );
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+      checkAdmin(s?.user);
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithGoogle = () =>
-    supabase.auth.signInWithOAuth({
+  const signInWithGoogle = async () => {
+    if (!supabase) throw new Error('Auth not configured');
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
+    if (error) throw error;
+  };
 
-  const signOut = () => supabase.auth.signOut();
+  const signInWithEmail = async (email, password) => {
+    if (!supabase) throw new Error('Auth not configured');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  const signUpWithEmail = async (email, password, fullName) => {
+    if (!supabase) throw new Error('Auth not configured');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  const resetPassword = async (email) => {
+    if (!supabase) throw new Error('Auth not configured');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  };
+
+  const signOut = async () => {
+    if (!supabase) return;
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user, session, isAdmin, loading, signInWithGoogle, signOut }}
+      value={{
+        user,
+        session,
+        isAdmin,
+        loading,
+        signInWithGoogle,
+        signInWithEmail,
+        signUpWithEmail,
+        resetPassword,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

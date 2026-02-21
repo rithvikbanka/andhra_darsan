@@ -1,19 +1,24 @@
 import React, { lazy, Suspense, useEffect } from 'react';
 import "./App.css";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { initializeExperiences } from './utils/localStorage';
 import { DEMO_EXPERIENCES } from './demoData';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { AdminRoute, UserRoute } from './components/ProtectedRoute';
 
 // Lazy load all page components for better performance
 const Home = lazy(() => import('./pages/Home'));
 const Experiences = lazy(() => import('./pages/Experiences'));
 const ExperienceDetail = lazy(() => import('./pages/ExperienceDetail'));
 const Login = lazy(() => import('./pages/Login'));
+const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const ForgotEmail = lazy(() => import('./pages/ForgotEmail'));
+const MyAccount = lazy(() => import('./pages/MyAccount'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const FAQ = lazy(() => import('./pages/FAQ'));
-const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ManageExperiences = lazy(() => import('./pages/admin/ManageExperiences'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -33,54 +38,10 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Admin route guard
-const AdminRoute = ({ children }) => {
-  const { user, isAdmin, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#FAF7F0]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B0000]"></div>
-          <p className="text-[#8B0000] font-medium">Verifying access...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-[#FAF7F0] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-3xl font-serif font-bold text-[#8B0000] mb-4">
-            Access Denied
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Your account does not have admin privileges. Please contact the site
-            administrator if you believe this is an error.
-          </p>
-          <button
-            onClick={() => window.history.back()}
-            className="px-6 py-2 bg-[#8B0000] hover:bg-[#6B0000] text-white rounded-lg transition-colors"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return children;
-};
-
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAuthPage = ['/login', '/auth/callback', '/reset-password', '/forgot-email'].includes(location.pathname);
 
   // Initialize localStorage with demo data on first visit
   useEffect(() => {
@@ -90,19 +51,27 @@ function AppContent() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Toaster position="top-right" />
-      {!isAdminRoute && <Header />}
+      {!isAdminRoute && !isAuthPage && <Header />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/experience/:slug" element={<ExperienceDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/faq" element={<FAQ />} />
 
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-email" element={<ForgotEmail />} />
+
+        {/* Protected User Routes */}
+        <Route path="/my-account" element={<UserRoute><MyAccount /></UserRoute>} />
+        <Route path="/dashboard" element={<UserRoute><Dashboard /></UserRoute>} />
+
         {/* Admin Routes — protected by Supabase auth + admin email check */}
-        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/experiences" element={<AdminRoute><ManageExperiences /></AdminRoute>} />
 
@@ -115,7 +84,7 @@ function AppContent() {
         {/* 404 Fallback - Must be last */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && !isAuthPage && <Footer />}
       <WhatsAppButton />
     </Suspense>
   );
