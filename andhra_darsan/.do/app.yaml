@@ -1,0 +1,9 @@
+name: andhra-darsan
+static_sites:
+  - name: frontend
+    source_dir: frontend
+    build_command: yarn build
+    output_dir: build
+    routes:
+      - path: /
+    catchall_document: index.html
