@@ -57,6 +57,27 @@ const ExperienceDetail = () => {
     phone: ''
   });
 
+  // TODO: Re-enable when hooking to backend
+  // const fetchExperience = async () => {
+  //   try {
+  //     const data = await experienceAPI.getBySlug(slug);
+  //     setExperience(data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching experience:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Demo mode: Find experience from localStorage by slug
+  const fetchExperience = useCallback(() => {
+    setTimeout(() => {
+      const foundExperience = getExperienceBySlug(slug);
+      setExperience(foundExperience || null);
+      setLoading(false);
+    }, 300);
+  }, [slug]);
+
   useEffect(() => {
     fetchExperience();
   }, [fetchExperience]);
@@ -73,32 +94,10 @@ const ExperienceDetail = () => {
       setCurrentImageIndex((prevIndex) => 
         (prevIndex + 1) % experience.images.length
       );
-    }, 4000); // 4 seconds per image
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [experience]);
-
-  // TODO: Re-enable when hooking to backend
-  // const fetchExperience = async () => {
-  //   try {
-  //     const data = await experienceAPI.getBySlug(slug);
-  //     setExperience(data);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error('Error fetching experience:', error);
-  //     setLoading(false);
-  //   }
-  // };
-
-  // Demo mode: Find experience from localStorage by slug
-  const fetchExperience = useCallback(() => {
-    // Simulate loading delay for realistic feel
-    setTimeout(() => {
-      const foundExperience = getExperienceBySlug(slug);
-      setExperience(foundExperience || null);
-      setLoading(false);
-    }, 300);
-  }, [slug]);
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prevIndex) => 

@@ -36,14 +36,6 @@ const ManageExperiences = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState(null);
 
-  useEffect(() => {
-    loadExperiences();
-  }, []);
-
-  useEffect(() => {
-    filterExperiences();
-  }, [filterExperiences]);
-
   const loadExperiences = () => {
     const data = getExperiences();
     setExperiences(data);
@@ -76,6 +68,14 @@ const ManageExperiences = () => {
     () => debounce((value) => setSearchQuery(value), 300),
     []
   );
+
+  useEffect(() => {
+    loadExperiences();
+  }, []);
+
+  useEffect(() => {
+    filterExperiences();
+  }, [filterExperiences]);
 
   const handleSearchChange = (e) => {
     debouncedSearch(e.target.value);
