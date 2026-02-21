@@ -288,8 +288,8 @@ const ExperienceDetail = () => {
                 </div>
                 <div className="pt-2">
                   <p className="text-sm text-[#5C5C5C]">
-                    📞 WhatsApp: +91 98765 43210<br/>
-                    ✉️ Email: bookings@andhradarsan.com
+                    📞 WhatsApp: +91 88973 12800<br/>
+                    ✉️ Email: andhradarsan@gmail.com
                   </p>
                 </div>
               </div>

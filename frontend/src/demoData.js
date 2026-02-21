@@ -498,7 +498,7 @@ export const DEMO_USER = {
   id: 1,
   name: "Demo User",
   email: "demo@andhradarsan.com",
-  phone: "+91 98765 43210",
+  phone: "+91 88973 12800",
   is_admin: false
 };
 
@@ -529,7 +529,7 @@ export const DEMO_BOOKINGS = [
     addOns: ["Pickup & Drop Off - Vijayawada", "Photography / Reels"],
     customer_name: "Demo User",
     customer_email: "demo@andhradarsan.com",
-    customer_phone: "+91 98765 43210"
+    customer_phone: "+91 88973 12800"
   },
   {
     id: "DEMO-002",
@@ -547,7 +547,7 @@ export const DEMO_BOOKINGS = [
     addOns: ["Extra Spice Kit"],
     customer_name: "Demo User",
     customer_email: "demo@andhradarsan.com",
-    customer_phone: "+91 98765 43210"
+    customer_phone: "+91 88973 12800"
   }
 ];
 

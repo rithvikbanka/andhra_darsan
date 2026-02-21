@@ -421,7 +421,7 @@ export const faqs = [
 export const mockUser = {
   name: "Arjun Reddy",
   email: "arjun.reddy@example.com",
-  phone: "+91 98765 43210",
+  phone: "+91 88973 12800",
   upcomingBookings: [
     {
       id: "BD001",

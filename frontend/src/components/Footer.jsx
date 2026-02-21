@@ -57,7 +57,7 @@ const Footer = () => {
     try {
       const subject = encodeURIComponent('Newsletter Subscription Request');
       const body = encodeURIComponent(`New newsletter subscription request from: ${email}`);
-      window.location.href = `mailto:vyshnavikorlakunta@gmail.com?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:andhradarsan@gmail.com?subject=${subject}&body=${body}`;
       
       toast.success('Thank you! Opening your email client...');
       setEmail('');
@@ -89,7 +89,7 @@ const Footer = () => {
   // Handle phone call with confirmation
   const handlePhoneClick = (e) => {
     e.preventDefault();
-    const confirmed = window.confirm('Do you want to call +91 98765 43210?');
+    const confirmed = window.confirm('Do you want to call +91 88973 12800?');
     if (confirmed) {
       window.location.href = 'tel:+919876543210';
     }
@@ -251,18 +251,18 @@ const Footer = () => {
                   className="flex items-center gap-2 hover:text-[#DAA520] transition-colors group"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0 group-hover:text-[#DAA520]" />
-                  <span className="hover:underline">+91 98765 43210</span>
+                  <span className="hover:underline">+91 88973 12800</span>
                 </a>
               </li>
               
               {/* Clickable Email - Opens Mail Client */}
               <li>
                 <a 
-                  href="mailto:vyshnavikorlakunta@gmail.com?subject=Inquiry%20about%20Cultural%20Experiences"
+                  href="mailto:andhradarsan@gmail.com?subject=Inquiry%20about%20Cultural%20Experiences"
                   className="flex items-center gap-2 hover:text-[#DAA520] transition-colors group"
                 >
                   <Mail className="w-4 h-4 flex-shrink-0 group-hover:text-[#DAA520]" />
-                  <span className="hover:underline">vyshnavikorlakunta@gmail.com</span>
+                  <span className="hover:underline">andhradarsan@gmail.com</span>
                 </a>
               </li>
             </ul>

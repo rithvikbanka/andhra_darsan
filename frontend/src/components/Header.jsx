@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-// Demo mode: hiding Login until auth backend is ready - User icon commented
-// import { User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut, Shield, User } from 'lucide-react';
 import { Button } from './ui/button';
 import logoFull from '../assets/logo-full.png';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, loading, signOut } = useAuth();
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -17,6 +18,20 @@ const Header = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+    setMobileMenuOpen(false);
+  };
+
+  const userDisplayName = user?.user_metadata?.full_name
+    || user?.user_metadata?.name
+    || user?.email?.split('@')[0]
+    || '';
+
+  const userAvatar = user?.user_metadata?.avatar_url
+    || user?.user_metadata?.picture;
 
   return (
     <header className="sticky top-0 z-50 bg-[#FAF7F0]/95 backdrop-blur-sm border-b border-[#8B4513]/10">
@@ -51,14 +66,55 @@ const Header = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
-            {/* Demo mode: hiding Login until auth backend is ready */}
-            {/* <Link to="/login">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <User className="w-4 h-4" />
-                Login
-              </Button>
-            </Link> */}
+          <div className="hidden md:flex items-center gap-3">
+            {!loading && !user && (
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <User className="w-4 h-4" />
+                  Login
+                </Button>
+              </Link>
+            )}
+
+            {!loading && user && (
+              <>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm" className="gap-2 text-[#8B0000]">
+                      <Shield className="w-4 h-4" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+                <div className="flex items-center gap-2 px-2">
+                  {userAvatar ? (
+                    <img
+                      src={userAvatar}
+                      alt={userDisplayName}
+                      className="w-7 h-7 rounded-full border border-[#8B0000]/20"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-[#8B0000] flex items-center justify-center text-white text-xs font-bold">
+                      {userDisplayName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-sm font-medium text-[#2C2C2C] max-w-[120px] truncate">
+                    {userDisplayName}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-gray-600 hover:text-red-700"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </>
+            )}
+
             <Link to="/experiences">
               <Button
                 size="sm"
@@ -98,13 +154,55 @@ const Header = () => {
                   {link.name}
                 </Link>
               ))}
-              {/* Demo mode: hiding Login until auth backend is ready */}
-              {/* <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" size="sm" className="w-full gap-2">
-                  <User className="w-4 h-4" />
-                  Login
-                </Button>
-              </Link> */}
+
+              {!loading && !user && (
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full gap-2">
+                    <User className="w-4 h-4" />
+                    Login
+                  </Button>
+                </Link>
+              )}
+
+              {!loading && user && (
+                <>
+                  <div className="flex items-center gap-2 py-2 border-t border-gray-200 pt-4">
+                    {userAvatar ? (
+                      <img
+                        src={userAvatar}
+                        alt={userDisplayName}
+                        className="w-7 h-7 rounded-full border border-[#8B0000]/20"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-[#8B0000] flex items-center justify-center text-white text-xs font-bold">
+                        {userDisplayName.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-sm font-medium text-[#2C2C2C]">
+                      {userDisplayName}
+                    </span>
+                  </div>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full gap-2 text-[#8B0000] justify-start">
+                        <Shield className="w-4 h-4" />
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full gap-2 text-gray-600 hover:text-red-700 justify-start"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </Button>
+                </>
+              )}
+
               <Link to="/experiences" onClick={() => setMobileMenuOpen(false)}>
                 <Button
                   size="sm"
