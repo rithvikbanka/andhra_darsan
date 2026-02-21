@@ -21,6 +21,8 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ManageExperiences = lazy(() => import('./pages/admin/ManageExperiences'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Lazy load layout components
@@ -58,6 +60,8 @@ function AppContent() {
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/experience/:slug" element={<ExperienceDetail />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

@@ -379,7 +379,10 @@ const Login = () => {
 
         <div className="mt-6 pt-4 border-t border-gray-200">
           <p className="text-xs text-center text-gray-500">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            By continuing, you agree to our{' '}
+            <Link to="/terms" className="text-[#8B0000] hover:underline">Terms of Service</Link>
+            {' '}and{' '}
+            <Link to="/privacy-policy" className="text-[#8B0000] hover:underline">Privacy Policy</Link>
           </p>
         </div>
       </div>

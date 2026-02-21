@@ -212,16 +212,22 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toast.info('Privacy Policy page coming soon!');
-                  }}
-                  className="hover:text-[#DAA520] transition-colors cursor-pointer"
+                <Link 
+                  to="/privacy-policy"
+                  onClick={() => scrollToTop(100)}
+                  className="hover:text-[#DAA520] transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/terms"
+                  onClick={() => scrollToTop(100)}
+                  className="hover:text-[#DAA520] transition-colors"
+                >
+                  Terms of Service
+                </Link>
               </li>
             </ul>
           </div>
