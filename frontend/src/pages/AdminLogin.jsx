@@ -123,7 +123,7 @@ const AdminLogin = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@andhradarsan.com"
+                placeholder="hello@andhradarsan.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required

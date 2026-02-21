@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+
+/* ─── Old Supabase-based admin login (preserved for reference) ───
 import { useAuth } from '../../context/AuthContext';
+const ADMIN_EMAILS = ['hello@andhradarsan.com'];
+// Used signInWithEmail + signInWithGoogle from AuthContext
+// Checked signedInUser.email against ADMIN_EMAILS
+// Called signOut() if not authorized
+─── End old Supabase admin login ─── */
 
 /* ─── Old demo-mode admin login (preserved for reference) ───
 import { DEMO_ADMIN } from '../../demoData';
@@ -13,12 +20,14 @@ const handleDemoSubmit = (e) => {
 };
 ─── End old demo-mode logic ─── */
 
-const ADMIN_EMAILS = ['hello@andhradarsan.com'];
+const ADMIN_EMAIL = process.env.REACT_APP_ADMIN_EMAIL || 'hello@andhradarsan.com';
+const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'AndhraAdmin@2026';
 
 const Spinner = ({ className = 'h-5 w-5' }) => (
   <div className={`animate-spin rounded-full border-2 border-current border-t-transparent ${className}`} />
 );
 
+/* ─── Old Google OAuth button (preserved for reference) ───
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -27,10 +36,10 @@ const GoogleIcon = () => (
     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
   </svg>
 );
+─── End old Google button ─── */
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, loading: authLoading, signInWithEmail, signInWithGoogle, signOut } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,47 +48,30 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user && isAdmin) navigate('/admin', { replace: true });
-  }, [user, isAdmin, navigate]);
+    if (localStorage.getItem('admin_authenticated') === 'true') {
+      navigate('/admin', { replace: true });
+    }
+  }, [navigate]);
 
-  const handleEmailSignIn = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    try {
-      const { user: signedInUser } = await signInWithEmail(email, password);
-      if (!ADMIN_EMAILS.includes(signedInUser?.email?.toLowerCase())) {
-        await signOut();
-        setError('Access denied. This account does not have admin privileges.');
+
+    setTimeout(() => {
+      const overridePassword = localStorage.getItem('admin_password_override');
+      const expectedPassword = overridePassword || ADMIN_PASSWORD;
+
+      if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === expectedPassword) {
+        localStorage.setItem('admin_authenticated', 'true');
+        localStorage.setItem('admin_email', email.toLowerCase());
+        navigate('/admin', { replace: true });
+      } else {
+        setError('Invalid admin credentials. Please try again.');
       }
-    } catch (err) {
-      const msg = err.message || '';
-      if (msg.includes('Invalid login credentials'))
-        setError('Incorrect email or password.');
-      else setError(msg || 'Sign-in failed');
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
-
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      await signInWithGoogle();
-    } catch (err) {
-      setError(err.message || 'Google sign-in failed');
-      setLoading(false);
-    }
-  };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
-        <Spinner className="h-12 w-12 text-[#8B0000]" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-amber-50 flex items-center justify-center px-4 py-12">
@@ -97,10 +89,10 @@ const AdminLogin = () => {
           </div>
         )}
 
-        <form onSubmit={handleEmailSignIn} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="admin-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input id="admin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@andhradarsan.com" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B0000] text-sm" required />
+            <input id="admin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hello@andhradarsan.com" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B0000] text-sm" required />
           </div>
           <div>
             <label htmlFor="admin-pw" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
@@ -116,22 +108,18 @@ const AdminLogin = () => {
           </button>
         </form>
 
+        {/* DISABLED: Google OAuth removed from admin login — hardcoded credentials only
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
           <div className="relative flex justify-center text-sm"><span className="bg-white px-4 text-gray-500">or</span></div>
         </div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
-        >
-          <GoogleIcon />
-          Continue with Google
+        <button onClick={handleGoogleSignIn} disabled={loading} className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50">
+          <GoogleIcon /> Continue with Google
         </button>
+        */}
 
         <div className="mt-8 text-center">
-          <Link to="/" className="text-sm text-gray-500 hover:text-[#8B0000]">← Back to main website</Link>
+          <Link to="/" className="text-sm text-gray-500 hover:text-[#8B0000]">&larr; Back to main website</Link>
         </div>
       </div>
     </div>

@@ -37,7 +37,7 @@
 ✅ **Database**
 - MongoDB collections: users, experiences, bookings
 - Seeded with 9 experiences
-- Admin user: admin@andhradarsan.com / admin123
+- Admin user: hello@andhradarsan.com / admin123
 
 #### 2. Frontend Integration
 ✅ **API Service Layer** (`/app/frontend/src/services/api.js`)
@@ -255,7 +255,7 @@
 ## Default Credentials
 
 **Admin Access**:
-- Email: admin@andhradarsan.com
+- Email: hello@andhradarsan.com
 - Password: admin123
 - URL: /admin/login
 

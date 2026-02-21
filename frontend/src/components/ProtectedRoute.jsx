@@ -8,11 +8,19 @@ const LoadingSpinner = () => (
   </div>
 );
 
-export const AdminRoute = ({ children }) => {
+/* ─── Old Supabase-based AdminRoute (preserved for reference) ───
+export const AdminRoute_Supabase = ({ children }) => {
   const { user, isAdmin, loading } = useAuth();
   if (loading) return <LoadingSpinner />;
   if (!user) return <Navigate to="/admin/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
+  return children;
+};
+─── End old Supabase AdminRoute ─── */
+
+export const AdminRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('admin_authenticated') === 'true';
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
   return children;
 };
 
@@ -25,6 +33,12 @@ export const UserRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
   return children;
+};
+
+export const adminLogout = () => {
+  localStorage.removeItem('admin_authenticated');
+  localStorage.removeItem('admin_email');
+  localStorage.removeItem('admin_password_override');
 };
 
 export default AdminRoute;

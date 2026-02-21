@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -27,6 +27,43 @@ const Spinner = ({ className = 'h-5 w-5' }) => (
   <div className={`animate-spin rounded-full border-2 border-current border-t-transparent ${className}`} />
 );
 
+const getInputClass = (field, fieldErrors) =>
+  `w-full px-4 py-3 rounded-lg border ${fieldErrors[field] ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-[#8B0000]'} focus:outline-none focus:ring-2 text-sm`;
+
+const PasswordInput = ({ value, onChange, show, onToggle, placeholder, id, field, fieldErrors }) => (
+  <div className="relative">
+    <input
+      id={id}
+      type={show ? 'text' : 'password'}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={getInputClass(field, fieldErrors)}
+    />
+    <button type="button" onClick={onToggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+      {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+    </button>
+  </div>
+);
+
+const FieldError = ({ fieldErrors, field }) =>
+  fieldErrors[field] ? <p className="text-red-600 text-xs mt-1">{fieldErrors[field]}</p> : null;
+
+const ErrorBanner = ({ error }) =>
+  error ? (
+    <div className={`${error.includes('check your inbox') ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-red-50 border-red-200 text-red-700'} border px-4 py-3 rounded-lg text-sm mb-4 flex items-start gap-3`}>
+      <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+      <span>{error}</span>
+    </div>
+  ) : null;
+
+const Divider = () => (
+  <div className="relative my-6">
+    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
+    <div className="relative flex justify-center text-sm"><span className="bg-white px-4 text-gray-500">or continue with</span></div>
+  </div>
+);
+
 const Login = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
@@ -46,6 +83,9 @@ const Login = () => {
   const [remember, setRemember] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
 
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const countdownRef = useRef(null);
+
   useEffect(() => {
     if (user) {
       const redirect = sessionStorage.getItem('redirectAfterLogin');
@@ -60,6 +100,25 @@ const Login = () => {
       setGoogleLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    return () => {
+      setGoogleLoading(false);
+      setLoading(false);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, []);
+
+  const startResendCountdown = () => {
+    setResendCountdown(60);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    countdownRef.current = setInterval(() => {
+      setResendCountdown((prev) => {
+        if (prev <= 1) { clearInterval(countdownRef.current); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const clearState = () => {
     setError('');
@@ -124,12 +183,15 @@ const Login = () => {
     e.preventDefault();
     clearState();
     if (!email.trim()) { setFieldErrors({ email: 'Please enter your email address' }); return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { setFieldErrors({ email: 'Please enter a valid email' }); return; }
     setLoading(true);
     try {
       await resetPassword(email);
       setSuccess(email);
+      startResendCountdown();
     } catch {
       setSuccess(email);
+      startResendCountdown();
     } finally {
       setLoading(false);
     }
@@ -142,6 +204,7 @@ const Login = () => {
       await signInWithGoogle();
     } catch (err) {
       setError(err.message || 'Google sign-in failed');
+    } finally {
       setGoogleLoading(false);
     }
   };
@@ -153,55 +216,6 @@ const Login = () => {
       </div>
     );
   }
-
-  const inputClass = (field) =>
-    `w-full px-4 py-3 rounded-lg border ${fieldErrors[field] ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-[#8B0000]'} focus:outline-none focus:ring-2 text-sm`;
-
-  const PasswordInput = ({ value, onChange, show, onToggle, placeholder, id, field }) => (
-    <div className="relative">
-      <input
-        id={id}
-        type={show ? 'text' : 'password'}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={inputClass(field)}
-      />
-      <button type="button" onClick={onToggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-        {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-      </button>
-    </div>
-  );
-
-  const FieldError = ({ field }) =>
-    fieldErrors[field] ? <p className="text-red-600 text-xs mt-1">{fieldErrors[field]}</p> : null;
-
-  const ErrorBanner = () =>
-    error ? (
-      <div className={`${error.includes('check your inbox') ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-red-50 border-red-200 text-red-700'} border px-4 py-3 rounded-lg text-sm mb-4 flex items-start gap-3`}>
-        <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-        <span>{error}</span>
-      </div>
-    ) : null;
-
-  const Divider = () => (
-    <div className="relative my-6">
-      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
-      <div className="relative flex justify-center text-sm"><span className="bg-white px-4 text-gray-500">or continue with</span></div>
-    </div>
-  );
-
-  const GoogleButton = () => (
-    <button
-      type="button"
-      onClick={handleGoogle}
-      disabled={googleLoading}
-      className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
-    >
-      {googleLoading ? <Spinner /> : <GoogleIcon />}
-      {googleLoading ? 'Redirecting...' : 'Continue with Google'}
-    </button>
-  );
 
   /* ═══════ FORGOT PASSWORD MODE ═══════ */
   if (mode === 'forgot') {
@@ -217,22 +231,26 @@ const Login = () => {
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
               <p className="text-gray-600 text-sm mb-6">
-                If <strong>{success}</strong> is registered, you'll receive a reset link shortly. The link expires in 1 hour.
+                If <strong>{success}</strong> is registered with us, you'll receive a password reset link shortly. Please check your inbox and spam folder.
               </p>
-              <button onClick={() => { setSuccess(''); }} className="text-sm text-gray-500 hover:text-[#8B0000] underline">
-                Resend email
-              </button>
+              {resendCountdown > 0 ? (
+                <p className="text-sm text-gray-400">Resend in {resendCountdown}s...</p>
+              ) : (
+                <button onClick={() => { setSuccess(''); }} className="text-sm text-[#8B0000] hover:underline font-medium">
+                  Resend reset email
+                </button>
+              )}
             </div>
           ) : (
             <>
               <h2 className="text-2xl font-bold text-gray-900 mb-1">Reset your password</h2>
               <p className="text-gray-500 text-sm mb-6">Enter your email and we'll send you a reset link</p>
-              <ErrorBanner />
+              <ErrorBanner error={error} />
               <form onSubmit={handleForgot} className="space-y-4">
                 <div>
                   <label htmlFor="forgot-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={inputClass('email')} />
-                  <FieldError field="email" />
+                  <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={getInputClass('email', fieldErrors)} />
+                  <FieldError fieldErrors={fieldErrors} field="email" />
                 </div>
                 <button type="submit" disabled={loading} className="w-full bg-[#8B0000] hover:bg-[#6B0000] text-white py-3 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                   {loading ? <><Spinner /> Sending...</> : 'Send Reset Link'}
@@ -297,17 +315,17 @@ const Login = () => {
           </button>
         </div>
 
-        <ErrorBanner />
+        <ErrorBanner error={error} />
 
         {mode === 'signin' ? (
           <form onSubmit={handleSignIn} className="space-y-4">
             <div>
               <label htmlFor="si-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input id="si-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={inputClass('email')} required />
+              <input id="si-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={getInputClass('email', fieldErrors)} required />
             </div>
             <div>
               <label htmlFor="si-pw" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <PasswordInput id="si-pw" value={password} onChange={(e) => setPassword(e.target.value)} show={showPw} onToggle={() => setShowPw(!showPw)} placeholder="Enter your password" field="password" />
+              <PasswordInput id="si-pw" value={password} onChange={(e) => setPassword(e.target.value)} show={showPw} onToggle={() => setShowPw(!showPw)} placeholder="Enter your password" field="password" fieldErrors={fieldErrors} />
             </div>
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
@@ -324,23 +342,23 @@ const Login = () => {
           <form onSubmit={handleSignUp} className="space-y-4">
             <div>
               <label htmlFor="su-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input id="su-name" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className={inputClass('fullName')} />
-              <FieldError field="fullName" />
+              <input id="su-name" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className={getInputClass('fullName', fieldErrors)} />
+              <FieldError fieldErrors={fieldErrors} field="fullName" />
             </div>
             <div>
               <label htmlFor="su-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input id="su-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={inputClass('email')} />
-              <FieldError field="email" />
+              <input id="su-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your.email@example.com" className={getInputClass('email', fieldErrors)} />
+              <FieldError fieldErrors={fieldErrors} field="email" />
             </div>
             <div>
               <label htmlFor="su-pw" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <PasswordInput id="su-pw" value={password} onChange={(e) => setPassword(e.target.value)} show={showPw} onToggle={() => setShowPw(!showPw)} placeholder="Min. 8 characters" field="password" />
-              <FieldError field="password" />
+              <PasswordInput id="su-pw" value={password} onChange={(e) => setPassword(e.target.value)} show={showPw} onToggle={() => setShowPw(!showPw)} placeholder="Min. 8 characters" field="password" fieldErrors={fieldErrors} />
+              <FieldError fieldErrors={fieldErrors} field="password" />
             </div>
             <div>
               <label htmlFor="su-cpw" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <PasswordInput id="su-cpw" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} show={showConfirmPw} onToggle={() => setShowConfirmPw(!showConfirmPw)} placeholder="Confirm your password" field="confirmPassword" />
-              <FieldError field="confirmPassword" />
+              <PasswordInput id="su-cpw" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} show={showConfirmPw} onToggle={() => setShowConfirmPw(!showConfirmPw)} placeholder="Confirm your password" field="confirmPassword" fieldErrors={fieldErrors} />
+              <FieldError fieldErrors={fieldErrors} field="confirmPassword" />
             </div>
             <button type="submit" disabled={loading} className="w-full bg-[#8B0000] hover:bg-[#6B0000] text-white py-3 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
               {loading ? <><Spinner /> Creating account...</> : 'Create Account'}
@@ -349,7 +367,15 @@ const Login = () => {
         )}
 
         <Divider />
-        <GoogleButton />
+        <button
+          type="button"
+          onClick={handleGoogle}
+          disabled={googleLoading}
+          className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
+        >
+          {googleLoading ? <Spinner /> : <GoogleIcon />}
+          {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+        </button>
 
         <div className="mt-6 pt-4 border-t border-gray-200">
           <p className="text-xs text-center text-gray-500">

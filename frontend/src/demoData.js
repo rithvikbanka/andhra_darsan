@@ -506,7 +506,7 @@ export const DEMO_USER = {
 export const DEMO_ADMIN = {
   id: 2,
   name: "Admin User",
-  email: "admin@andhradarsan.com",
+  email: "hello@andhradarsan.com",
   phone: "+91 98765 43211",
   is_admin: true
 };

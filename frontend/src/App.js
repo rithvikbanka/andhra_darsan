@@ -69,7 +69,7 @@ function AppContent() {
         <Route path="/my-account" element={<UserRoute><MyAccount /></UserRoute>} />
         <Route path="/dashboard" element={<UserRoute><Dashboard /></UserRoute>} />
 
-        {/* Admin Routes — protected by Supabase auth + admin email check */}
+        {/* Admin Routes — protected by localStorage hardcoded credentials */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

@@ -434,7 +434,7 @@ async def seed_database():
     
     # Create admin user if not exists
     from auth import get_password_hash
-    admin_email = "admin@andhradarsan.com"
+    admin_email = "hello@andhradarsan.com"
     admin_exists = await db.users.find_one({"email": admin_email})
     
     if not admin_exists:
